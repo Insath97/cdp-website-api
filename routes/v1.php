@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\V1\AuthController;
+use App\Http\Controllers\V1\CMSController;
 use App\Http\Controllers\V1\PermissionController;
 use App\Http\Controllers\V1\RoleController;
 use App\Http\Controllers\V1\UserController;
@@ -28,4 +29,10 @@ Route::middleware(['auth:api', 'throttle:api'])->prefix('v1')->group(function ()
         Route::patch('{id}/profile-image', [UserController::class, 'updateProfileImage']);
         Route::delete('{id}/profile-image', [UserController::class, 'removeProfileImage']);
     });
+
+    Route::prefix('cms')->group(function () {
+        Route::get('/', [CMSController::class, 'index']);
+        Route::post('update', [CMSController::class, 'update']);
+    });
+
 });
