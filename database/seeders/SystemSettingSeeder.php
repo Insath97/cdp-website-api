@@ -14,7 +14,6 @@ class SystemSettingSeeder extends Seeder
     {
         $settings = [
             'site_name' => 'Demo API Starter Kit',
-            'contact_numbers' => '+94 11 234 5678',
             'official_email' => 'hello@demo-api.com',
             'digital_presence' => 'www.demo-api.com',
             'facebook_url' => "",
@@ -25,7 +24,10 @@ class SystemSettingSeeder extends Seeder
             'office_address' => "",
             'contact_notification_email' => 'hello@demo-api.com',
             'enable_contact_notification' => '1',
-            'lms_url' => 'https://lms.demo-api.com/',
+            'mobile_number' => "",
+            'whatsapp_number' => "",
+            'head_office_address' => "",
+            'company_registration_number' => "",
         ];
 
         foreach ($settings as $key => $value) {
