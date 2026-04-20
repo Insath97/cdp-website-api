@@ -92,6 +92,12 @@ class PermissionsSeeder extends Seeder
             ['name' => 'Contact Reply',  'group_name' => 'Contact Permissions'],
             ['name' => 'Contact Delete', 'group_name' => 'Contact Permissions'],
 
+            /* Branch Management */
+            ['name' => 'Branch Index',  'group_name' => 'Branch Permissions'],
+            ['name' => 'Branch Create', 'group_name' => 'Branch Permissions'],
+            ['name' => 'Branch Update', 'group_name' => 'Branch Permissions'],
+            ['name' => 'Branch Delete', 'group_name' => 'Branch Permissions'],
+
             /* Setting Management */
             ['name' => 'Setting Index',  'group_name' => 'Setting Permissions'],
             ['name' => 'Setting Update', 'group_name' => 'Setting Permissions'],
