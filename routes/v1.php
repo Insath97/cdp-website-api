@@ -9,6 +9,7 @@ use App\Http\Controllers\V1\BranchController;
 use App\Http\Controllers\V1\SettingController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\V1\ServiceController;
+use App\Http\Controllers\V1\PlanController;
 
 
 Route::prefix('v1')->middleware('throttle:auth')->group(function () {
@@ -49,5 +50,11 @@ Route::middleware(['auth:api', 'throttle:api'])->prefix('v1')->group(function ()
     Route::post('settings', [SettingController::class, 'update']);
 
     Route::apiResource('services', ServiceController::class);
+
+    Route::apiResource('plans', PlanController::class);
+    Route::prefix('plans')->group(function () {
+        Route::patch('{id}/activate', [PlanController::class, 'activate']);
+        Route::patch('{id}/deactivate', [PlanController::class, 'deactivate']);
+    });
      
 });
