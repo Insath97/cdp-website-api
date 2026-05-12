@@ -9,6 +9,7 @@ use App\Http\Controllers\V1\BranchController;
 use App\Http\Controllers\V1\SettingController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\V1\ServiceController;
+use App\Http\Controllers\V1\PlanController;
 
 
 Route::prefix('v1')->middleware('throttle:auth')->group(function () {
@@ -52,5 +53,5 @@ Route::middleware(['auth:api', 'throttle:api'])->prefix('v1')->group(function ()
     Route::prefix('services')->group(function () {
         Route::patch('{id}/toggle-status', [ServiceController::class, 'toggleStatus']);
     });
-     
+
 });
