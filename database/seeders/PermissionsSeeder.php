@@ -101,6 +101,13 @@ class PermissionsSeeder extends Seeder
             /* Setting Management */
             ['name' => 'Setting Index',  'group_name' => 'Setting Permissions'],
             ['name' => 'Setting Update', 'group_name' => 'Setting Permissions'],
+
+            /* Service Management */
+            ['name' => 'Service Index',  'group_name' => 'Service Permissions'],
+            ['name' => 'Service Create', 'group_name' => 'Service Permissions'],
+            ['name' => 'Service Update', 'group_name' => 'Service Permissions'],
+            ['name' => 'Service Delete', 'group_name' => 'Service Permissions'],
+            ['name' => 'Service Toggle Active', 'group_name' => 'Service Permissions'],
         ];
 
         foreach ($permissions as $permission) {

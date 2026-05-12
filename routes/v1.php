@@ -49,5 +49,8 @@ Route::middleware(['auth:api', 'throttle:api'])->prefix('v1')->group(function ()
     Route::post('settings', [SettingController::class, 'update']);
 
     Route::apiResource('services', ServiceController::class);
+    Route::prefix('services')->group(function () {
+        Route::patch('{id}/toggle-status', [ServiceController::class, 'toggleStatus']);
+    });
      
 });

@@ -17,13 +17,23 @@ use App\Traits\FileUploadTrait;
 use Illuminate\Support\Str;
 
 
-class ServiceController extends Controller
+class ServiceController extends Controller implements HasMiddleware
 {
     use ActivityLogTrait, FileUploadTrait;
 
      /**
      * Get the middleware assigned to the controller.
      */
+    public static function middleware(): array
+    {
+        return [
+            new Middleware('permission:Service Index', only: ['index', 'show']),
+            new Middleware('permission:Service Create', only: ['store']),
+            new Middleware('permission:Service Update', only: ['update']),
+            new Middleware('permission:Service Toggle Active', only: ['toggleStatus']),
+            new Middleware('permission:Service Delete', only: ['destroy']),
+        ];
+    }
     /**
      * Display a listing of the resource.
      */
@@ -91,7 +101,6 @@ class ServiceController extends Controller
 
             $service = Service::create($data);
 
-
             DB::commit();
 
             $this->logActivity('CREATE', 'Service', "Created service: {$service->title} ({$service->slug})");
@@ -146,7 +155,6 @@ class ServiceController extends Controller
      */
     public function edit(string $id)
     {
-        //
     }
 
     /**
@@ -232,6 +240,40 @@ class ServiceController extends Controller
             return response()->json([
                 'status' => 'error',
                 'message' => 'Failed to delete service',
+                'error' => config('app.debug') ? $th->getMessage() : 'Internal server error'
+            ], 500);
+        }
+    }
+
+    /**
+     * Toggle the status of the service.
+     */
+    public function toggleStatus(string $id)
+    {
+        try {
+            $service = Service::find($id);
+
+            if (!$service) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Service not found',
+                ], 404);
+            }
+
+            $service->update(['is_active' => !$service->is_active]);
+            $status = $service->is_active ? 'activated' : 'deactivated';
+
+            $this->logActivity('TOGGLE_STATUS', 'Service', ucfirst($status) . " service: {$service->title}");
+
+            return response()->json([
+                'status' => 'success',
+                'message' => "Service {$status} successfully",
+                'data' => $service
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to toggle service status',
                 'error' => config('app.debug') ? $th->getMessage() : 'Internal server error'
             ], 500);
         }

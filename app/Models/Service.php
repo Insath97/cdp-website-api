@@ -14,7 +14,8 @@ class Service extends Model
         'imagepath',
         'title',
         'slug',
-        'description'
+        'description',
+        'is_active'
      ];
 
      /**
