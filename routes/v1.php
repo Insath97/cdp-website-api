@@ -8,6 +8,8 @@ use App\Http\Controllers\V1\UserController;
 use App\Http\Controllers\V1\BranchController;
 use App\Http\Controllers\V1\SettingController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\V1\ServiceController;
+
 
 Route::prefix('v1')->middleware('throttle:auth')->group(function () {
     Route::post('login', [AuthController::class, 'login']);
@@ -46,4 +48,6 @@ Route::middleware(['auth:api', 'throttle:api'])->prefix('v1')->group(function ()
     Route::get('settings', [SettingController::class, 'index']);
     Route::post('settings', [SettingController::class, 'update']);
 
+    Route::apiResource('services', ServiceController::class);
+     
 });
