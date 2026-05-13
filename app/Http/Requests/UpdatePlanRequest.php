@@ -25,8 +25,10 @@ class UpdatePlanRequest extends FormRequest
             'image' => 'sometimes|image|mimes:png,jpeg,jpg|max:2048',
             'maintitle' => 'sometimes|string|max:255',
             'subtitle' => 'sometimes|string|max:255',
-            'short_description' => 'sometimes|string|max:255',
+            'short_description' => 'sometimes|string',
             'is_active' => 'sometimes|boolean',
+            'features' => 'required|array',
+            'features.*.feature' => 'required|string|max:255',
         ];
     }
 

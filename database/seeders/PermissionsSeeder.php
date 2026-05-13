@@ -108,6 +108,13 @@ class PermissionsSeeder extends Seeder
             ['name' => 'Service Update', 'group_name' => 'Service Permissions'],
             ['name' => 'Service Delete', 'group_name' => 'Service Permissions'],
             ['name' => 'Service Toggle Active', 'group_name' => 'Service Permissions'],
+
+            /* Plan Management */
+            ['name' => 'Plan Index',  'group_name' => 'Plan Permissions'],
+            ['name' => 'Plan Create', 'group_name' => 'Plan Permissions'],
+            ['name' => 'Plan Update', 'group_name' => 'Plan Permissions'],
+            ['name' => 'Plan Delete', 'group_name' => 'Plan Permissions'],
+            ['name' => 'Plan Toggle Active', 'group_name' => 'Plan Permissions'],
         ];
 
         foreach ($permissions as $permission) {

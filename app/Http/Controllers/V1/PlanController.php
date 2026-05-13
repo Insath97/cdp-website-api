@@ -12,9 +12,26 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
-class PlanController extends Controller
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
+
+class PlanController extends Controller implements HasMiddleware
 {
     use ActivityLogTrait, FileUploadTrait;
+
+    /**
+     * Get the middleware assigned to the controller.
+     */
+    public static function middleware(): array
+    {
+        return [
+            new Middleware('permission:Plan Index', only: ['index', 'show']),
+            new Middleware('permission:Plan Create', only: ['store']),
+            new Middleware('permission:Plan Update', only: ['update']),
+            new Middleware('permission:Plan Toggle Active', only: ['toggleStatus']),
+            new Middleware('permission:Plan Delete', only: ['destroy']),
+        ];
+    }
 
     /**
      * Display a listing of the resource.
@@ -23,7 +40,7 @@ class PlanController extends Controller
     {
         try {
             $perPage = $request->get('per_page', 15);
-            $query = Plan::query();
+            $query = Plan::with('features');
 
             // Search
             if ($request->has('search') && $request->search != '') {
@@ -70,6 +87,12 @@ class PlanController extends Controller
 
             $plan = Plan::create($data);
 
+            if (isset($data['features'])) {
+                foreach ($data['features'] as $feature) {
+                    $plan->features()->create($feature);
+                }
+            }
+
             DB::commit();
 
             $this->logActivity('CREATE', 'Plan', "Created plan: {$plan->maintitle}");
@@ -77,7 +100,7 @@ class PlanController extends Controller
             return response()->json([
                 'status' => 'success',
                 'message' => 'Plan created successfully',
-                'data' => $plan
+                'data' => $plan->load('features')
             ], 201);
         } catch (\Throwable $th) {
             DB::rollBack();
@@ -95,7 +118,7 @@ class PlanController extends Controller
     public function show(string $id)
     {
         try {
-            $plan = Plan::find($id);
+            $plan = Plan::with('features')->find($id);
 
             if (!$plan) {
                 return response()->json([
@@ -149,6 +172,13 @@ class PlanController extends Controller
 
             $plan->update($data);
 
+            if (isset($data['features'])) {
+                $plan->features()->delete();
+                foreach ($data['features'] as $feature) {
+                    $plan->features()->create($feature);
+                }
+            }
+
             DB::commit();
 
             $this->logActivity('UPDATE', 'Plan', "Updated plan: {$plan->maintitle}");
@@ -156,7 +186,7 @@ class PlanController extends Controller
             return response()->json([
                 'status' => 'success',
                 'message' => 'Plan updated successfully',
-                'data' => $plan
+                'data' => $plan->load('features')
             ], 200);
         } catch (\Throwable $th) {
             DB::rollBack();
@@ -206,9 +236,9 @@ class PlanController extends Controller
     }
 
     /**
-     * Activate the plan.
+     * Toggle the status of the plan.
      */
-    public function activate(string $id)
+    public function toggleStatus(string $id)
     {
         try {
             $plan = Plan::find($id);
@@ -220,66 +250,20 @@ class PlanController extends Controller
                 ], 404);
             }
 
-            if ($plan->is_active) {
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'Plan is already active',
-                ], 422);
-            }
+            $plan->update(['is_active' => !$plan->is_active]);
+            $status = $plan->is_active ? 'activated' : 'deactivated';
 
-            $plan->update(['is_active' => true]);
-
-            $this->logActivity('ACTIVATE', 'Plan', "Activated plan: {$plan->maintitle}");
+            $this->logActivity('TOGGLE_STATUS', 'Plan', ucfirst($status) . " plan: {$plan->maintitle}");
 
             return response()->json([
                 'status' => 'success',
-                'message' => 'Plan activated successfully',
+                'message' => "Plan {$status} successfully",
                 'data' => $plan
             ], 200);
         } catch (\Throwable $th) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Failed to activate plan',
-                'error' => config('app.debug') ? $th->getMessage() : 'Internal server error'
-            ], 500);
-        }
-    }
-
-    /**
-     * Deactivate the plan.
-     */
-    public function deactivate(string $id)
-    {
-        try {
-            $plan = Plan::find($id);
-
-            if (!$plan) {
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'Plan not found',
-                ], 404);
-            }
-
-            if (!$plan->is_active) {
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'Plan is already inactive',
-                ], 422);
-            }
-
-            $plan->update(['is_active' => false]);
-
-            $this->logActivity('DEACTIVATE', 'Plan', "Deactivated plan: {$plan->maintitle}");
-
-            return response()->json([
-                'status' => 'success',
-                'message' => 'Plan deactivated successfully',
-                'data' => $plan
-            ], 200);
-        } catch (\Throwable $th) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Failed to deactivate plan',
+                'message' => 'Failed to toggle plan status',
                 'error' => config('app.debug') ? $th->getMessage() : 'Internal server error'
             ], 500);
         }

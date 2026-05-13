@@ -27,6 +27,8 @@ class StorePlanRequest extends FormRequest
             'subtitle' => 'required|string|max:255',
             'short_description' => 'required|string',
             'is_active' => 'nullable|boolean',
+            'features' => 'required|array',
+            'features.*.feature' => 'required|string|max:255',
         ];
     }
 

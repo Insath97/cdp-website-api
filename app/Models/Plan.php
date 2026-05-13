@@ -46,4 +46,11 @@ class Plan extends Model
         });
     }
 
+    /**
+     * Get the features for the plan.
+     */
+    public function features()
+    {
+        return $this->hasMany(PlanFeature::class);
+    }
 }
