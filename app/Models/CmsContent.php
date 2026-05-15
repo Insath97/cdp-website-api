@@ -52,7 +52,7 @@ class CmsContent extends Model
      */
     public static function getStructuredPageContent(string $page)
     {
-        $contents = self::where('page', $page)->get();
+        $contents = self::query()->where('page', $page)->get();
 
         $structured = [];
         foreach ($contents as $content) {
@@ -68,7 +68,7 @@ class CmsContent extends Model
      */
     public static function getPublicPageContent(string $page)
     {
-        $contents = self::where('page', $page)->get();
+        $contents = self::query()->where('page', $page)->get();
         $fileTypes = [self::TYPE_IMAGE, self::TYPE_VIDEO, self::TYPE_PDF, self::TYPE_FILE];
 
         $structured = [];

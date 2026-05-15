@@ -78,7 +78,7 @@ class PlanController extends Controller implements HasMiddleware
             DB::beginTransaction();
 
             $data = $request->validated();
-            
+
             // Handle file upload
             $filepath = $this->handleFileUpload($request, 'image', null, 'plans', Str::slug($data['maintitle']));
             if ($filepath) {
@@ -148,7 +148,7 @@ class PlanController extends Controller implements HasMiddleware
     public function update(UpdatePlanRequest $request, string $id)
     {
         try {
-            $plan = Plan::find($id);
+            $plan = Plan::query()->find($id);
 
             if (!$plan) {
                 return response()->json([
@@ -204,7 +204,7 @@ class PlanController extends Controller implements HasMiddleware
     public function destroy(string $id)
     {
         try {
-            $plan = Plan::find($id);
+            $plan = Plan::query()->find($id);
 
             if (!$plan) {
                 return response()->json([
@@ -218,7 +218,7 @@ class PlanController extends Controller implements HasMiddleware
             $this->deleteFile($plan->image);
 
             $planName = $plan->maintitle;
-            $plan->delete();
+            $plan->querydelete();
 
             $this->logActivity('DELETE', 'Plan', "Deleted plan: {$planName}");
 
@@ -241,7 +241,7 @@ class PlanController extends Controller implements HasMiddleware
     public function toggleStatus(string $id)
     {
         try {
-            $plan = Plan::find($id);
+            $plan = Plan::queryfind($id);
 
             if (!$plan) {
                 return response()->json([

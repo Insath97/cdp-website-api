@@ -109,6 +109,16 @@ class PermissionsSeeder extends Seeder
             ['name' => 'Service Delete', 'group_name' => 'Service Permissions'],
             ['name' => 'Service Toggle Active', 'group_name' => 'Service Permissions'],
 
+            /* Event Management */
+            ['name' => 'Event Index', 'group_name' => 'Event Permissions'],
+            ['name' => 'Event Create', 'group_name' => 'Event Permissions'],
+            ['name' => 'Event Update', 'group_name' => 'Event Permissions'],
+            ['name' => 'Event Delete', 'group_name' => 'Event Permissions'],
+            ['name' => 'Event Soft Delete', 'group_name' => 'Event Permissions'],
+            ['name' => 'Event Force Delete', 'group_name' => 'Event Permissions'],
+            ['name' => 'Event Restore', 'group_name' => 'Event Permissions'],
+            ['name' => 'Event Toggle Active', 'group_name' => 'Event Permissions'],
+
             /* Plan Management */
             ['name' => 'Plan Index',  'group_name' => 'Plan Permissions'],
             ['name' => 'Plan Create', 'group_name' => 'Plan Permissions'],
