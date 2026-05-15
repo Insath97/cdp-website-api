@@ -126,7 +126,7 @@ class ServiceController extends Controller implements HasMiddleware
     public function show(string $id)
     {
         try {
-            $service = Service::find($id);
+            $service = Service::query()->find($id);
 
             if (!$service) {
                 return response()->json([
@@ -163,7 +163,7 @@ class ServiceController extends Controller implements HasMiddleware
     public function update(UpdateServicesRequest $request, string $id)
     {
          try {
-            $service = Service::find($id);
+            $service = Service::query()->find($id);
 
             if (!$service) {
                 return response()->json([
@@ -217,7 +217,7 @@ class ServiceController extends Controller implements HasMiddleware
     public function destroy(string $id)
     {
          try {
-            $service = Service::find($id);
+            $service = Service::query()->find($id);
 
             if (!$service) {
                 return response()->json([
@@ -228,7 +228,7 @@ class ServiceController extends Controller implements HasMiddleware
             }
 
             $serviceName = $service->name;
-            $service->delete();
+            $service->query()->delete();
 
             $this->logActivity('DELETE', 'Service', "Deleted service: {$serviceName}");
 
@@ -251,7 +251,7 @@ class ServiceController extends Controller implements HasMiddleware
     public function toggleStatus(string $id)
     {
         try {
-            $service = Service::find($id);
+            $service = Service::query()->find($id);
 
             if (!$service) {
                 return response()->json([

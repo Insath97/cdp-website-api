@@ -105,7 +105,7 @@ class BranchController extends Controller implements HasMiddleware
     public function show(string $id)
     {
         try {
-            $branch = Branch::find($id);
+            $branch = Branch::query()->find($id);
 
             if (!$branch) {
                 return response()->json([
@@ -135,7 +135,7 @@ class BranchController extends Controller implements HasMiddleware
     public function update(UpdateBranchRequest $request, string $id)
     {
         try {
-            $branch = Branch::find($id);
+            $branch = Branch::query()->find($id);
 
             if (!$branch) {
                 return response()->json([
@@ -175,7 +175,7 @@ class BranchController extends Controller implements HasMiddleware
     public function destroy(string $id)
     {
         try {
-            $branch = Branch::find($id);
+            $branch = Branch::query()->find($id);
 
             if (!$branch) {
                 return response()->json([
@@ -186,7 +186,7 @@ class BranchController extends Controller implements HasMiddleware
             }
 
             $branchName = $branch->name;
-            $branch->delete();
+            $branch->query()->delete();
 
             $this->logActivity('DELETE', 'Branch', "Deleted branch: {$branchName}");
 
@@ -209,7 +209,7 @@ class BranchController extends Controller implements HasMiddleware
     public function activate(string $id)
     {
         try {
-            $branch = Branch::find($id);
+            $branch = Branch::query()->find($id);
 
             if (!$branch) {
                 return response()->json([
@@ -249,7 +249,7 @@ class BranchController extends Controller implements HasMiddleware
     public function deactivate(string $id)
     {
         try {
-            $branch = Branch::find($id);
+            $branch = Branch::query()->find($id);
 
             if (!$branch) {
                 return response()->json([

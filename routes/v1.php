@@ -10,6 +10,7 @@ use App\Http\Controllers\V1\SettingController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\V1\ServiceController;
 use App\Http\Controllers\V1\PlanController;
+use App\Http\Controllers\V1\EventController;
 
 
 Route::prefix('v1')->middleware('throttle:auth')->group(function () {
@@ -52,6 +53,16 @@ Route::middleware(['auth:api', 'throttle:api'])->prefix('v1')->group(function ()
     Route::apiResource('services', ServiceController::class);
     Route::prefix('services')->group(function () {
         Route::patch('{id}/toggle-status', [ServiceController::class, 'toggleStatus']);
+    });
+
+    Route::apiResource('events', EventController::class)->except(['store']);
+    Route::post('event', [EventController::class, 'store']);
+    Route::prefix('events')->group(function () {
+        Route::patch('{id}/activate', [EventController::class, 'activate']);
+        Route::patch('{id}/deactivate', [EventController::class, 'deactivate']);
+        Route::delete('{id}/soft-delete', [EventController::class, 'softDelete']);
+        Route::patch('{id}/restore', [EventController::class, 'restore']);
+        Route::delete('{id}/force-delete', [EventController::class, 'forceDelete']);
     });
 
 });
