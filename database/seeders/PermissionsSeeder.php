@@ -126,6 +126,16 @@ class PermissionsSeeder extends Seeder
             ['name' => 'Plan Update', 'group_name' => 'Plan Permissions'],
             ['name' => 'Plan Delete', 'group_name' => 'Plan Permissions'],
             ['name' => 'Plan Toggle Active', 'group_name' => 'Plan Permissions'],
+
+            /* Career Management */
+            ['name' => 'Career Index',          'group_name' => 'Career Permissions'],
+            ['name' => 'Career Create',         'group_name' => 'Career Permissions'],
+            ['name' => 'Career Update',         'group_name' => 'Career Permissions'],
+            ['name' => 'Career Delete',         'group_name' => 'Career Permissions'],
+            ['name' => 'Career Soft Delete',    'group_name' => 'Career Permissions'],
+            ['name' => 'Career Force Delete',   'group_name' => 'Career Permissions'],
+            ['name' => 'Career Restore',        'group_name' => 'Career Permissions'],
+            ['name' => 'Career Toggle Active',  'group_name' => 'Career Permissions'],
         ];
 
         foreach ($permissions as $permission) {

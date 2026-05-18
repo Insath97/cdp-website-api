@@ -13,6 +13,7 @@ use App\Http\Controllers\V1\PlanController;
 use App\Http\Controllers\V1\EventController;
 use App\Http\Controllers\V1\Public\PublicEventController;
 use App\Http\Controllers\V1\ActivityLogController;
+use App\Http\Controllers\V1\CareerController;
 
 
 Route::prefix('v1')->middleware('throttle:auth')->group(function () {
@@ -72,6 +73,13 @@ Route::middleware(['auth:api', 'throttle:api'])->prefix('v1')->group(function ()
         Route::patch('{id}/reject', [EventController::class, 'reject']);
         Route::patch('{id}/restore', [EventController::class, 'restore']);
         Route::delete('{id}/force-delete', [EventController::class, 'forceDelete']);
+    });
+
+    Route::apiResource('careers', CareerController::class);
+    Route::prefix('careers')->group(function () {
+        Route::patch('{id}/toggle-status', [CareerController::class, 'toggleStatus']);
+        Route::patch('{id}/restore', [CareerController::class, 'restore']);
+        Route::delete('{id}/force-delete', [CareerController::class, 'forceDelete']);
     });
 
 });
