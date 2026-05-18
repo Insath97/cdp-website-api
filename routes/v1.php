@@ -12,6 +12,7 @@ use App\Http\Controllers\V1\ServiceController;
 use App\Http\Controllers\V1\PlanController;
 use App\Http\Controllers\V1\EventController;
 use App\Http\Controllers\V1\Public\PublicEventController;
+use App\Http\Controllers\V1\ActivityLogController;
 
 
 Route::prefix('v1')->middleware('throttle:auth')->group(function () {
@@ -31,6 +32,8 @@ Route::middleware(['auth:api', 'throttle:api'])->prefix('v1')->group(function ()
 
     Route::get('permissions/list/', [PermissionController::class, 'getAvailablePermissions']);
     Route::apiResource('permissions', PermissionController::class);
+
+    Route::apiResource('activity-logs', ActivityLogController::class)->only(['index', 'show']);
 
     Route::get('roles/list/', [RoleController::class, 'getAvailableRoles']);
     Route::apiResource('roles', RoleController::class);
