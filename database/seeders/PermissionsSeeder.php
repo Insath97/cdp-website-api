@@ -118,6 +118,7 @@ class PermissionsSeeder extends Seeder
             ['name' => 'Event Force Delete', 'group_name' => 'Event Permissions'],
             ['name' => 'Event Restore', 'group_name' => 'Event Permissions'],
             ['name' => 'Event Toggle Active', 'group_name' => 'Event Permissions'],
+            ['name' => 'Event Approve', 'group_name' => 'Event Permissions'],
 
             /* Plan Management */
             ['name' => 'Plan Index',  'group_name' => 'Plan Permissions'],

@@ -11,10 +11,17 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\V1\ServiceController;
 use App\Http\Controllers\V1\PlanController;
 use App\Http\Controllers\V1\EventController;
+use App\Http\Controllers\V1\Public\PublicEventController;
 
 
 Route::prefix('v1')->middleware('throttle:auth')->group(function () {
     Route::post('login', [AuthController::class, 'login']);
+});
+
+/* public routes - no auth required */
+Route::prefix('v1')->middleware('throttle:api')->group(function () {
+    Route::get('public/events', [PublicEventController::class, 'index']);
+    Route::get('public/events/{idOrSlug}', [PublicEventController::class, 'show']);
 });
 
 /* protected routes */
@@ -55,12 +62,11 @@ Route::middleware(['auth:api', 'throttle:api'])->prefix('v1')->group(function ()
         Route::patch('{id}/toggle-status', [ServiceController::class, 'toggleStatus']);
     });
 
-    Route::apiResource('events', EventController::class)->except(['store']);
-    Route::post('event', [EventController::class, 'store']);
+    Route::apiResource('events', EventController::class);
     Route::prefix('events')->group(function () {
-        Route::patch('{id}/activate', [EventController::class, 'activate']);
-        Route::patch('{id}/deactivate', [EventController::class, 'deactivate']);
-        Route::delete('{id}/soft-delete', [EventController::class, 'softDelete']);
+        Route::patch('{id}/toggle-status', [EventController::class, 'toggleStatus']);
+        Route::patch('{id}/approve', [EventController::class, 'approve']);
+        Route::patch('{id}/reject', [EventController::class, 'reject']);
         Route::patch('{id}/restore', [EventController::class, 'restore']);
         Route::delete('{id}/force-delete', [EventController::class, 'forceDelete']);
     });

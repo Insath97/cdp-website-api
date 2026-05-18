@@ -78,4 +78,12 @@ class Event extends Model
     {
         return $this->belongsTo(User::class, 'decision_by');
     }
+
+    /**
+     * Get the tags for the event.
+     */
+    public function tags()
+    {
+        return $this->belongsToMany(Tag::class, 'event_tags');
+    }
 }

@@ -7,8 +7,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
-
-class CreateEventRequest extends FormRequest
+class UpdateEventRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -25,14 +24,18 @@ class CreateEventRequest extends FormRequest
      */
     public function rules(): array
     {
+        $eventId = $this->route('event');
+
         return [
-            'title' => 'required|string|max:255',
-            'status' => 'required|in:pending,approved,rejected',
-            'rejected_reason' => 'nullable|string',
-            'created_date' => 'required|date',
+            'title' => 'sometimes|required|string|max:255',
+            'slug' => 'sometimes|nullable|string|max:255|unique:events,slug,' . $eventId,
+            'created_date' => 'sometimes|required|date',
             'thumbnail_image' => 'nullable|image|mimes:jpeg,png,jpg|max:10240',
             'url' => 'nullable|url|max:255',
-            'description' => 'nullable|string',
+            'description' => 'sometimes|required|string',
+            'is_active' => 'boolean',
+            'status' => 'in:pending,approved,rejected',
+            'rejected_reason' => 'nullable|string',
             'galleries' => 'nullable|array',
             'galleries.*' => 'image|mimes:jpeg,png,jpg|max:100240',
             'tags' => 'nullable|string|max:1000',
