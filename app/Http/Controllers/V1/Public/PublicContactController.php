@@ -49,12 +49,6 @@ class PublicContactController extends Controller
                         $this->logActivity('MAIL_FAILED', 'Contact', "Failed to send public contact notification email to admin: {$adminEmail}. Error: " . $mailException->getMessage());
                     }
                 }
-
-                $adminUsers = User::role('Super Admin')->get();
-
-                if ($adminUsers->isNotEmpty()) {
-                    Notification::send($adminUsers, new ContactSubmittedNotification($contact));
-                }
             }
 
             $this->logActivity('CREATE', 'Contact', "Submitted contact form from IP: {$contact->ip_address}");
