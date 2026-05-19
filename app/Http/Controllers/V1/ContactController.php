@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use App\Http\Requests\CreateContactRequest;
+use App\Http\Requests\ReplyContactRequest;
 use App\Http\Requests\UpdateContactRequest;
 use Illuminate\Support\Facades\Log;
 
@@ -94,7 +95,7 @@ class ContactController extends Controller
     /**
      * Send reply email to a contact and store reply metadata.
      */
-    public function sendEmail(CreateContactRequest $request, string $id)
+    public function sendEmail(ReplyContactRequest $request, string $id)
     {
         try {
             DB::beginTransaction();
@@ -116,7 +117,7 @@ class ContactController extends Controller
             ]);
 
             try {
-                Mail::to('dev@localhost.com')->send(new ContactReplyMail(
+                Mail::to($contact->email)->send(new ContactReplyMail(
                     $contact,
                     $data['subject'],
                     $data['message']
@@ -127,9 +128,11 @@ class ContactController extends Controller
 
             DB::commit();
 
+            $this->logActivity('REPLY', 'Contact', "Replied to contact message from: {$contact->email}");
+
             return response()->json([
                 'status' => 'success',
-                'message' => 'Your message has been received and stored. We will get back to you soon.'
+                'message' => 'Reply email sent and stored successfully.'
             ], 200);
         } catch (\Throwable $th) {
             DB::rollBack();
