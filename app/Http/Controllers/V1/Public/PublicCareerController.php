@@ -177,4 +177,42 @@ class PublicCareerController extends Controller
             ], 500);
         }
     }
+
+    /**
+     * Display a listing of career applications for public tracking/validation.
+     */
+    public function applications(Request $request)
+    {
+        try {
+            $perPage = $request->get('per_page', 15);
+            $query = CareerApplication::query()->with('career');
+
+            if ($request->has('email') && $request->email != '') {
+                $query->where('email', $request->email);
+            }
+
+            if ($request->has('phone_number') && $request->phone_number != '') {
+                $query->where('phone_number', $request->phone_number);
+            }
+
+            if ($request->has('application_code') && $request->application_code != '') {
+                $query->where('application_code', $request->application_code);
+            }
+
+            $query->orderBy('created_at', 'desc');
+            $applications = $query->paginate($perPage);
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Career applications retrieved successfully',
+                'data' => $applications,
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to retrieve applications',
+                'error' => config('app.debug') ? $th->getMessage() : 'Internal server error',
+            ], 500);
+        }
+    }
 }

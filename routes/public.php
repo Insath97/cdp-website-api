@@ -16,6 +16,7 @@ Route::prefix('v1/public')->group(function () {
     Route::get('branches', [PublicBranchController::class, 'index']);
 
     Route::get('careers', [PublicCareerController::class, 'index']);
+    Route::get('careers/applications', [PublicCareerController::class, 'applications']);
     Route::get('careers/{idOrSlug}', [PublicCareerController::class, 'show']);
     Route::post('careers/apply', [PublicCareerController::class, 'apply']);
 
