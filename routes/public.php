@@ -1,5 +1,5 @@
 <?php
- 
+
  use App\Http\Controllers\V1\Public\PublicCMSController;
  use App\Http\Controllers\V1\Public\PublicBranchController;
  use App\Http\Controllers\V1\Public\PublicCareerController;
@@ -9,14 +9,15 @@
  use App\Http\Controllers\V1\Public\PublicPlanController;
  use App\Http\Controllers\V1\Public\PublicServiceController;
  use Illuminate\Support\Facades\Route;
- 
+
  Route::prefix('v1/public')->group(function () {
      Route::get('cms/{page}', [PublicCMSController::class, 'getPageContent']);
-     
+
      Route::get('branches', [PublicBranchController::class, 'index']);
 
      Route::get('careers', [PublicCareerController::class, 'index']);
      Route::get('careers/{idOrSlug}', [PublicCareerController::class, 'show']);
+    Route::post('careers', [PublicCareerController::class, 'store']);
 
      Route::get('contact-types', [PublicContactTypeController::class, 'index']);
      Route::post('contacts', [PublicContactController::class, 'store']);

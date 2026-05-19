@@ -14,6 +14,7 @@ use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Mail;
 
 class CareerController extends Controller implements HasMiddleware
 {
@@ -87,66 +88,90 @@ class CareerController extends Controller implements HasMiddleware
     /**
      * Store a newly created resource in storage.
      */
-    public function store(CreateCareerRequest $request)
-    {
-        try {
-            DB::beginTransaction();
+public function store(CreateCareerRequest $request)
+{
+    try {
+        DB::beginTransaction();
 
-            $data = $request->validated();
+        $data = $request->validated();
 
-            // Handle slug generation inside controller - exactly like EventController
-            if (empty($data['slug'])) {
-                $data['slug'] = Str::slug($data['title']);
-            }
-
-            // Handle poster image upload
-            if ($request->hasFile('poster_image')) {
-                $filepath = $this->handleFileUpload($request, 'poster_image', null, 'careers', Str::slug($data['title']));
-                if ($filepath) {
-                    $data['poster_image'] = $filepath;
-                }
-            }
-
-            $career = Career::create($data);
-
-            // Sync relational lists
-            $this->syncCareerRelations($career, $data);
-
-            DB::commit();
-
-            $this->logActivity('CREATE', 'Career', "Created career post: {$career->title}");
-
-            return response()->json([
-                'status' => 'success',
-                'message' => 'Career post created successfully',
-                'data' => $career->load(['responsibilities', 'requirements', 'benefits']),
-            ], 201);
-        } catch (QueryException $qe) {
-            DB::rollBack();
-
-            if ((string) $qe->getCode() === '23000') {
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'Failed to create career post',
-                    'error' => 'Slug already exists. Please use a different title or slug.',
-                ], 422);
-            }
-
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Failed to create career post',
-                'error' => config('app.debug') ? $qe->getMessage() : 'Internal server error',
-            ], 500);
-        } catch (\Throwable $th) {
-            DB::rollBack();
-
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Failed to create career post',
-                'error' => config('app.debug') ? $th->getMessage() : 'Internal server error',
-            ], 500);
+        // Handle slug generation inside controller
+        if (empty($data['slug'])) {
+            $data['slug'] = Str::slug($data['title']);
         }
+
+        // Handle poster image upload
+        if ($request->hasFile('poster_image')) {
+            $filepath = $this->handleFileUpload(
+                $request,
+                'poster_image',
+                null,
+                'careers',
+                Str::slug($data['title'])
+            );
+
+            if ($filepath) {
+                $data['poster_image'] = $filepath;
+            }
+        }
+
+        $career = Career::create($data);
+
+
+        // Sync relational lists
+        $this->syncCareerRelations($career, $data);
+
+        DB::commit();
+
+        $this->logActivity(
+            'CREATE',
+            'Career',
+            "Created career post: {$career->title}"
+        );
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Career post created successfully',
+            'data' => $career->load([
+                'responsibilities',
+                'requirements',
+                'benefits'
+            ]),
+        ], 201);
+
+    } catch (QueryException $qe) {
+
+        DB::rollBack();
+
+        if ((string) $qe->getCode() === '23000') {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to create career post',
+                'error' => 'Slug already exists. Please use a different title or slug.',
+            ], 422);
+        }
+
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Failed to create career post',
+            'error' => config('app.debug')
+                ? $qe->getMessage()
+                : 'Internal server error',
+        ], 500);
+
+    } catch (\Throwable $th) {
+
+        DB::rollBack();
+
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Failed to create career post',
+            'error' => config('app.debug')
+                ? $th->getMessage()
+                : 'Internal server error',
+        ], 500);
     }
+}
 
     /**
      * Display the specified resource.

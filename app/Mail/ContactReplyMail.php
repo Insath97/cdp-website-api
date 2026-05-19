@@ -14,13 +14,17 @@ class ContactReplyMail extends Mailable
     use Queueable, SerializesModels;
 
     public $contact;
+    public $subjectLine;
+    public $messageBody;
 
     /**
      * Create a new message instance.
      */
-    public function __construct(Contact $contact)
+    public function __construct(Contact $contact, ?string $subjectLine = null, ?string $messageBody = null)
     {
         $this->contact = $contact;
+        $this->subjectLine = $subjectLine ?? ('Reply to your message: ' . $this->contact->subject);
+        $this->messageBody = $messageBody ?? ($this->contact->reply_message ?: $this->contact->message);
     }
 
     /**
@@ -29,7 +33,7 @@ class ContactReplyMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Reply to your message: ' . $this->contact->subject
+            subject: $this->subjectLine
         );
     }
 
@@ -41,10 +45,9 @@ class ContactReplyMail extends Mailable
         return new Content(
             view: 'mails.contact-reply',
             with: [
-                'name'    => $this->contact->name,
-                'subject' => $this->contact->subject,
-                'message' => $this->contact->message,
-                'reply'   => $this->contact->reply_message,
+                'contact' => $this->contact,
+                'subjectLine' => $this->subjectLine,
+                'messageBody' => $this->messageBody,
             ]
         );
     }

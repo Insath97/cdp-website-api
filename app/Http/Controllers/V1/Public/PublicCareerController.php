@@ -3,8 +3,13 @@
 namespace App\Http\Controllers\V1\Public;
 
 use App\Http\Controllers\Controller;
+use App\Models\SystemSetting;
 use App\Models\Career;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
+use App\Http\Requests\CreateCareerRequest;
+use App\Mail\CareerNotificationMail;
+
 
 class PublicCareerController extends Controller
 {
@@ -19,7 +24,7 @@ class PublicCareerController extends Controller
                 ->where('is_active', true)
                 ->where(function ($q) {
                     $q->whereNull('due_date')
-                      ->orWhere('due_date', '>=', now()->toDateString());
+                        ->orWhere('due_date', '>=', now()->toDateString());
                 });
 
             // Search
@@ -66,12 +71,12 @@ class PublicCareerController extends Controller
             $career = Career::with(['responsibilities', 'requirements', 'benefits'])
                 ->where(function ($q) use ($idOrSlug) {
                     $q->where('id', $idOrSlug)
-                      ->orWhere('slug', $idOrSlug);
+                        ->orWhere('slug', $idOrSlug);
                 })
                 ->where('is_active', true)
                 ->where(function ($q) {
                     $q->whereNull('due_date')
-                      ->orWhere('due_date', '>=', now()->toDateString());
+                        ->orWhere('due_date', '>=', now()->toDateString());
                 })
                 ->first();
 
@@ -93,6 +98,40 @@ class PublicCareerController extends Controller
                 'status' => 'error',
                 'message' => 'Failed to retrieve career posting',
                 'error' => config('app.debug') ? $th->getMessage() : 'Internal server error',
+            ], 500);
+        }
+    }
+
+
+    /**
+     * Store a newly created career posting in storage.
+     */
+    public function store(CreateCareerRequest $request)
+    {
+        try {
+
+            $data = $request->validated();
+
+            $career = Career::create($data);
+            $notificationEmail = SystemSetting::getValue('contact_notification_email', config('mail.from.address'));
+
+            Mail::to($notificationEmail)
+                ->send(new CareerNotificationMail($career));
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Career created successfully',
+                'notified_to' => $notificationEmail,
+                'data' => $career
+            ]);
+        } catch (\Throwable $th) {
+
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to create career',
+                'error' => config('app.debug')
+                    ? $th->getMessage()
+                    : 'Internal server error'
             ], 500);
         }
     }

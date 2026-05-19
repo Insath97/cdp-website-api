@@ -22,13 +22,13 @@ class SystemSettingSeeder extends Seeder
             'twitter_url' => "",
             'linkedin_url' => "",
             'office_address' => "",
-            'contact_notification_email' => 'info@cdp.lk',
+            'contact_notification_email' => 'piranya105@gmail.com',
             'enable_contact_notification' => '1',
             'mobile_number' => "",
             'whatsapp_number' => "",
             'head_office_address' => "",
             'company_registration_number' => "",
-            'career_mail' => 'careers@cdp.lk',
+            'career_mail' => 'piranya105@gmail.com',
             'enable_job_alert_notification' => '1'
         ];
 
@@ -39,4 +39,4 @@ class SystemSettingSeeder extends Seeder
             );
         }
     }
-} 
+}
