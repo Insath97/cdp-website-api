@@ -15,6 +15,7 @@ use App\Http\Controllers\V1\ActivityLogController;
 use App\Http\Controllers\V1\CareerController;
 use App\Http\Controllers\V1\ContactController;
 use App\Http\Controllers\V1\ContactTypeController;
+use App\Http\Controllers\V1\DatabaseBackupController;
 
 
 Route::prefix('v1')->middleware('throttle:auth')->group(function () {
@@ -55,6 +56,7 @@ Route::middleware(['auth', 'throttle:api'])->prefix('v1')->group(function () {
 
     Route::get('settings', [SettingController::class, 'index']);
     Route::post('settings', [SettingController::class, 'update']);
+    Route::get('database/export', [DatabaseBackupController::class, 'export']);
 
     Route::apiResource('services', ServiceController::class);
     Route::prefix('services')->group(function () {
