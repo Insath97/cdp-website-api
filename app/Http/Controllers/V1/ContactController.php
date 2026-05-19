@@ -52,94 +52,53 @@ class ContactController extends Controller
         }
     }
 
-    public function store(StoreContactRequest $request)
-    {
-        try {
-
-            DB::beginTransaction();
-
-            $data = $request->validated();
-            $contact = Contact::create($data);
-
-            try {
-                Mail::to('dev@localhost.com')->send(new ContactReplyMail(
-                    $contact,
-                    'New Contact Enquiry: ' . $contact->subject,
-                    $contact->message
-                ));
-            } catch (\Exception $mailException) {
-                Log::error('Contact notify mail error: ' . $mailException->getMessage());
-            }
-
-            DB::commit();
-
-            $this->logActivity('CREATE', 'Contact', "Created contact: {$contact->first_name} {$contact->last_name}");
-
-            return response()->json([
-                'status' => true,
-                'message' => 'Contact created successfully',
-                'data' => $contact
-            ], 201);
-        } catch (\Throwable $th) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Something went wrong',
-                'data' => null
-            ], 500);
-        }
-
-
-    }
-
-
     /**
-     * Send reply email to a contact and store reply metadata.
+     * Reply to the contact message.
      */
-    public function sendEmail(ReplyContactRequest $request, string $id)
+    public function reply(ReplyContactRequest $request, string $id)
     {
+        DB::beginTransaction();
         try {
-            DB::beginTransaction();
-
-            $data = $request->validated();
-
             $contact = Contact::query()->find($id);
 
-            if (! $contact) {
-                return response()->json(['status' => 'error', 'message' => 'Contact not found'], 404);
+            if (!$contact) {
+                return response()->json([
+                    'status'  => 'error',
+                    'message' => 'Contact message not found'
+                ], 404);
             }
 
             $contact->update([
-                'reply' => $data['message'],
-                'is_replied' => true,
-                'replied_by' => Auth::id(),
-                'replied_at' => now(),
-                'status' => 'replied',
+                'reply_message' => $request->reply_message,
+                'status'        => 'replied',
+                'is_replied'    => true,
+                'replied_by'    => Auth::id(),
+                'replied_at'    => now(),
             ]);
-
-            try {
-                Mail::to($contact->email)->send(new ContactReplyMail(
-                    $contact,
-                    $data['subject'],
-                    $data['message']
-                ));
-            } catch (\Exception $mailException) {
-                Log::error('Contact Mail Error: ' . $mailException->getMessage());
-            }
 
             DB::commit();
 
-            $this->logActivity('REPLY', 'Contact', "Replied to contact message from: {$contact->email}");
+            // Send reply email to visitor with try-catch and activity logging
+            try {
+                Mail::to($contact->email)->send(new ContactReplyMail($contact));
+                $this->logActivity('MAIL_SENT', 'Contact', "Reply email sent to visitor: {$contact->email}");
+            } catch (\Exception $e) {
+                $this->logActivity('MAIL_FAILED', 'Contact', "Failed to send reply email to visitor: {$contact->email}. Error: " . $e->getMessage());
+            }
+
+            $this->logActivity('REPLY', 'Contact', "Replied to message from: {$contact->name}");
 
             return response()->json([
-                'status' => 'success',
-                'message' => 'Reply email sent and stored successfully.'
+                'status'  => 'success',
+                'message' => 'Reply recorded successfully',
+                'data'    => $contact->load('repliedBy:id,name')
             ], 200);
         } catch (\Throwable $th) {
             DB::rollBack();
             return response()->json([
-                'status' => 'error',
-                'message' => 'Failed to process your request. Please try again later.',
-                'error' => config('app.debug') ? $th->getMessage() : 'Internal server error'
+                'status'  => 'error',
+                'message' => 'Failed to record reply',
+                'error'   => config('app.debug') ? $th->getMessage() : 'Internal server error'
             ], 500);
         }
     }

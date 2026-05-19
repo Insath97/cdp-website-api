@@ -71,7 +71,7 @@ Route::middleware(['auth', 'throttle:api'])->prefix('v1')->group(function () {
     Route::prefix('contacts')->group(function () {
         Route::patch('{id}/activate', [ContactController::class, 'activate']);
         Route::patch('{id}/deactivate', [ContactController::class, 'deactivate']);
-        Route::post('{id}/send-reply-email', [ContactController::class, 'sendEmail']);
+        Route::post('{id}/send-reply-email', [ContactController::class, 'reply']);
     });
 
     Route::get('events/tags/list', [EventController::class, 'getAvailableTags']);

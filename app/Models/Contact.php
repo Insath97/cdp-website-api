@@ -14,6 +14,7 @@ class Contact extends Model
         'subject',
         'message',
         'reply',
+        'reply_message',
         'status',
         'is_replied',
         'replied_by',
@@ -33,6 +34,30 @@ class Contact extends Model
     public function repliedBy()
     {
         return $this->belongsTo(User::class, 'replied_by');
+    }
+
+    /**
+     * Accessor for full name.
+     */
+    public function getNameAttribute()
+    {
+        return trim($this->first_name . ' ' . $this->last_name);
+    }
+
+    /**
+     * Accessor for reply message.
+     */
+    public function getReplyMessageAttribute()
+    {
+        return $this->reply;
+    }
+
+    /**
+     * Mutator for reply message.
+     */
+    public function setReplyMessageAttribute($value)
+    {
+        $this->attributes['reply'] = $value;
     }
 
     /**
