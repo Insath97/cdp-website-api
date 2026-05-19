@@ -44,8 +44,9 @@ class PublicContactController extends Controller
                             'subject' => $contact->subject,
                             'message' => $contact->message
                         ]));
+                        $this->logActivity('MAIL_SENT', 'Contact', "Public contact notification email sent to admin: {$adminEmail}");
                     } catch (\Exception $mailException) {
-                        Log::error('Public contact notify mail error: ' . $mailException->getMessage());
+                        $this->logActivity('MAIL_FAILED', 'Contact', "Failed to send public contact notification email to admin: {$adminEmail}. Error: " . $mailException->getMessage());
                     }
                 }
 
