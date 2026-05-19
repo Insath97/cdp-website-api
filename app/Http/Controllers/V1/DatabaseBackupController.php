@@ -24,12 +24,12 @@ class DatabaseBackupController extends Controller implements HasMiddleware
     public function export()
     {
         try {
-            $dbConfig = config('database.connections.mysql');
-            $database = $dbConfig['database'];
-            $username = $dbConfig['username'];
-            $password = $dbConfig['password'];
-            $host = $dbConfig['host'];
-            $port = $dbConfig['port'];
+            $dbConfig = (array) config('database.connections.mysql');
+            $database = $dbConfig['database'] ?? '';
+            $username = $dbConfig['username'] ?? '';
+            $password = $dbConfig['password'] ?? '';
+            $host = $dbConfig['host'] ?? '127.0.0.1';
+            $port = $dbConfig['port'] ?? '3306';
 
             $filename = "backup-" . $database . "-" . date('Y-m-d-H-i-s') . ".sql";
             $path = storage_path('app/' . $filename);
