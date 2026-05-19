@@ -573,5 +573,25 @@ class EventController extends Controller implements HasMiddleware
         }
     }
 
-  
+    /**
+     * Get list of all available tags (id and name only).
+     */
+    public function getAvailableTags()
+    {
+        try {
+            $tags = Tag::orderBy('name', 'asc')->get(['id', 'name']);
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Tags retrieved successfully',
+                'data' => $tags,
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to retrieve tags',
+                'error' => config('app.debug') ? $th->getMessage() : 'Internal server error',
+            ], 500);
+        }
+    }
 }

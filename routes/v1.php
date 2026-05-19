@@ -74,6 +74,7 @@ Route::middleware(['auth', 'throttle:api'])->prefix('v1')->group(function () {
         Route::post('{id}/send-email', [ContactController::class, 'sendEmail']);
     });
 
+    Route::get('events/tags/list', [EventController::class, 'getAvailableTags']);
     Route::apiResource('events', EventController::class);
     Route::prefix('events')->group(function () {
         Route::patch('{id}/toggle-status', [EventController::class, 'toggleStatus']);
