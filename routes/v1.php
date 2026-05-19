@@ -22,7 +22,7 @@ Route::prefix('v1')->middleware('throttle:auth')->group(function () {
 });
 
 /* protected routes */
-Route::middleware(['auth:api', 'throttle:api'])->prefix('v1')->group(function () {
+Route::middleware(['auth', 'throttle:api'])->prefix('v1')->group(function () {
     Route::get('me', [AuthController::class, 'me']);
     Route::post('logout', [AuthController::class, 'logout']);
 
