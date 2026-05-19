@@ -13,17 +13,12 @@ use App\Http\Controllers\V1\PlanController;
 use App\Http\Controllers\V1\EventController;
 use App\Http\Controllers\V1\ActivityLogController;
 use App\Http\Controllers\V1\CareerController;
+use App\Http\Controllers\V1\ContactController;
 use App\Http\Controllers\V1\ContactTypeController;
 
 
 Route::prefix('v1')->middleware('throttle:auth')->group(function () {
     Route::post('login', [AuthController::class, 'login']);
-});
-
-/* public routes - no auth required */
-Route::prefix('v1')->middleware('throttle:api')->group(function () {
-    Route::get('public/events', [PublicEventController::class, 'index']);
-    Route::get('public/events/{idOrSlug}', [PublicEventController::class, 'show']);
 });
 
 /* protected routes */
@@ -72,11 +67,11 @@ Route::middleware(['auth:api', 'throttle:api'])->prefix('v1')->group(function ()
         Route::patch('{id}/deactivate', [ContactTypeController::class, 'deactivate']);
     });
 
-    Route::apiResource('contacts', \App\Http\Controllers\V1\ContactController::class);
+    Route::apiResource('contacts', ContactController::class);
     Route::prefix('contacts')->group(function () {
-        Route::patch('{id}/activate', [\App\Http\Controllers\V1\ContactController::class, 'activate']);
-        Route::patch('{id}/deactivate', [\App\Http\Controllers\V1\ContactController::class, 'deactivate']);
-        Route::post('{id}/send-email', [\App\Http\Controllers\V1\ContactController::class, 'sendEmail']);
+        Route::patch('{id}/activate', [ContactController::class, 'activate']);
+        Route::patch('{id}/deactivate', [ContactController::class, 'deactivate']);
+        Route::post('{id}/send-email', [ContactController::class, 'sendEmail']);
     });
 
     Route::apiResource('events', EventController::class);

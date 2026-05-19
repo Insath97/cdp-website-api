@@ -24,7 +24,6 @@ class UpdateEventRequest extends FormRequest
      */
     public function rules(): array
     {
-<<<<<<< HEAD
         $eventId = $this->route('event');
 
         return [
@@ -40,17 +39,6 @@ class UpdateEventRequest extends FormRequest
             'galleries' => 'nullable|array',
             'galleries.*' => 'image|mimes:jpeg,png,jpg|max:100240',
             'tags' => 'nullable|string|max:1000',
-=======
-        return [
-            'title' => 'sometimes|required|string|max:255',
-            'slug' => 'sometimes|nullable|string|max:255|unique:events,slug,' . $this->route('event'),
-            'description' => 'sometimes|nullable|string',
-            'start_date' => 'sometimes|required|date',
-            'end_date' => 'sometimes|required|date|after_or_equal:start_date',
-            'location' => 'sometimes|nullable|string|max:255',
-            'is_active' => 'sometimes|boolean',
-             'galleries.*' => 'file|mimes:jpg,jpeg,png,gif,webp|max:2048'
->>>>>>> 0fdb880 (Added contact module)
         ];
     }
 

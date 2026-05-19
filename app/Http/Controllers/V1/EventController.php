@@ -5,10 +5,6 @@ namespace App\Http\Controllers\V1;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CreateEventRequest;
 use App\Http\Requests\UpdateEventRequest;
-<<<<<<< HEAD
-=======
-use Illuminate\Http\Request;
->>>>>>> 0fdb880 (Added contact module)
 use App\Models\Event;
 use App\Models\EventGallery;
 use App\Models\Tag;
@@ -354,16 +350,11 @@ class EventController extends Controller implements HasMiddleware
             }
 
             $name = $event->title;
-<<<<<<< HEAD
             if (! $event->query()->delete()) {
                 return response()->json([
                     'status' => 'error',
                     'message' => 'Failed to soft delete event',
                 ], 500);
-=======
-            if (!$event->query()->delete()) {
-                return response()->json(['status' => 'error', 'message' => 'Failed to soft delete event'], 500);
->>>>>>> 0fdb880 (Added contact module)
             }
 
             $this->logActivity('SOFT_DELETE', 'Event', "Soft deleted event: {$name}");
