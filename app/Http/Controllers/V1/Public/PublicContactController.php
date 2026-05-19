@@ -3,19 +3,22 @@
 namespace App\Http\Controllers\V1\Public;
 
 use App\Http\Controllers\Controller;
-use App\Mail\ContactReplyMail;
+use App\Mail\ContactFormMail;
 use Illuminate\Http\Request;
 use App\Models\Contact;
 use App\Http\Requests\StoreContactRequest;
 use App\Models\SystemSetting;
 use App\Models\User;
 use App\Notifications\ContactSubmittedNotification;
+use App\Traits\ActivityLogTrait;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Notification;
 
 class PublicContactController extends Controller
 {
+    use ActivityLogTrait;
+
     /**
      * Submit a new contact message from the public website.
      */
@@ -35,11 +38,12 @@ class PublicContactController extends Controller
 
                 if ($adminEmail) {
                     try {
-                        Mail::to($adminEmail)->send(new ContactReplyMail(
-                            $contact,
-                            'New Contact Enquiry: ' . $contact->subject,
-                            $contact->message
-                        ));
+                        Mail::to($adminEmail)->send(new ContactFormMail([
+                            'name' => $contact->first_name . ' ' . $contact->last_name,
+                            'email' => $contact->email,
+                            'subject' => $contact->subject,
+                            'message' => $contact->message
+                        ]));
                     } catch (\Exception $mailException) {
                         Log::error('Public contact notify mail error: ' . $mailException->getMessage());
                     }
@@ -51,6 +55,8 @@ class PublicContactController extends Controller
                     Notification::send($adminUsers, new ContactSubmittedNotification($contact));
                 }
             }
+
+            $this->logActivity('CREATE', 'Contact', "Submitted contact form from IP: {$contact->ip_address}");
 
             return response()->json([
                 'status' => true,
