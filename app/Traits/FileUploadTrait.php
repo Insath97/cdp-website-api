@@ -29,7 +29,7 @@ trait FileUploadTrait
         $fileName = $prefix
             ? $prefix . '.' . $extension
             : Str::random(25) . '.' . $extension;
-
+  
         $directory = "uploads/{$module}";
         $filePath = "{$directory}/{$fileName}";
 

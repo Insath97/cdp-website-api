@@ -26,7 +26,7 @@ trait ActivityLogTrait
                 'module' => $module,
                 'description' => $description,
                 'ip_address' => request()->ip(),
-                'user_agent' => request()->userAgent(),
+                'user_agent' => request()->userAgent(), 
             ]);
 
             // Laravel file logging

@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Cookie;
 
 class AuthController extends Controller
 {
-    /**
+    /** 
      * Admin Login
      */
     public function login(Request $request)

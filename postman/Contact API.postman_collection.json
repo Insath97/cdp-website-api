@@ -1,0 +1,86 @@
+{
+  "info": {
+    "name": "Contact API",
+    "_postman_id": "contact-api-collection",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Collection for testing protected contact API endpoints"
+  },
+  "item": [
+    {
+      "name": "Admin - List Contacts",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Accept", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{token}}" }
+        ],
+        "url": { "raw": "{{baseUrl}}/api/v1/contacts", "host": ["{{baseUrl}}"], "path": ["api", "v1", "contacts"] }
+      }
+    },
+    {
+      "name": "Admin - Create Contact",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Accept", "value": "application/json" },
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{token}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"first_name\": \"John\",\n  \"last_name\": \"Doe\",\n  \"email\": \"john@example.com\",\n  \"subject\": \"Test Contact\",\n  \"message\": \"This is a test contact message\"\n}"
+        },
+        "url": { "raw": "{{baseUrl}}/api/v1/contacts", "host": ["{{baseUrl}}"], "path": ["api", "v1", "contacts"] }
+      }
+    },
+    {
+      "name": "Admin - Get Contact",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Accept", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{token}}" }
+        ],
+        "url": { "raw": "{{baseUrl}}/api/v1/contacts/:id", "host": ["{{baseUrl}}"], "path": ["api", "v1", "contacts", ":id"] }
+      }
+    },
+    {
+      "name": "Admin - Delete Contact",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          { "key": "Accept", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{token}}" }
+        ],
+        "url": { "raw": "{{baseUrl}}/api/v1/contacts/:id", "host": ["{{baseUrl}}"], "path": ["api", "v1", "contacts", ":id"] }
+      }
+    },
+    {
+      "name": "Admin - Activate Contact",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          { "key": "Accept", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{token}}" }
+        ],
+        "url": { "raw": "{{baseUrl}}/api/v1/contacts/:id/activate", "host": ["{{baseUrl}}"], "path": ["api", "v1", "contacts", ":id", "activate"] }
+      }
+    },
+    {
+      "name": "Admin - Deactivate Contact",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          { "key": "Accept", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{token}}" }
+        ],
+        "url": { "raw": "{{baseUrl}}/api/v1/contacts/:id/deactivate", "host": ["{{baseUrl}}"], "path": ["api", "v1", "contacts", ":id", "deactivate"] }
+      }
+    }
+  ],
+  "variable": [
+    { "key": "baseUrl", "value": "http://127.0.0.1:8000" },
+    { "key": "token", "value": "" },
+    { "key": "id", "value": "" }
+  ]
+}

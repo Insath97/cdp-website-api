@@ -11,9 +11,13 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\V1\ServiceController;
 use App\Http\Controllers\V1\PlanController;
 use App\Http\Controllers\V1\EventController;
+<<<<<<< HEAD
 use App\Http\Controllers\V1\Public\PublicEventController;
 use App\Http\Controllers\V1\ActivityLogController;
 use App\Http\Controllers\V1\CareerController;
+=======
+use App\Http\Controllers\V1\ContactTypeController;
+>>>>>>> 0fdb880 (Added contact module)
 
 
 Route::prefix('v1')->middleware('throttle:auth')->group(function () {
@@ -66,6 +70,22 @@ Route::middleware(['auth:api', 'throttle:api'])->prefix('v1')->group(function ()
         Route::patch('{id}/toggle-status', [ServiceController::class, 'toggleStatus']);
     });
 
+<<<<<<< HEAD
+=======
+    Route::apiResource('contact-types', ContactTypeController::class);
+    Route::prefix('contact-types')->group(function () {
+        Route::patch('{id}/activate', [ContactTypeController::class, 'activate']);
+        Route::patch('{id}/deactivate', [ContactTypeController::class, 'deactivate']);
+    });
+
+    Route::apiResource('contacts', \App\Http\Controllers\V1\ContactController::class);
+    Route::prefix('contacts')->group(function () {
+        Route::patch('{id}/activate', [\App\Http\Controllers\V1\ContactController::class, 'activate']);
+        Route::patch('{id}/deactivate', [\App\Http\Controllers\V1\ContactController::class, 'deactivate']);
+        Route::post('{id}/send-email', [\App\Http\Controllers\V1\ContactController::class, 'sendEmail']);
+    });
+
+>>>>>>> 0fdb880 (Added contact module)
     Route::apiResource('events', EventController::class);
     Route::prefix('events')->group(function () {
         Route::patch('{id}/toggle-status', [EventController::class, 'toggleStatus']);
@@ -75,6 +95,7 @@ Route::middleware(['auth:api', 'throttle:api'])->prefix('v1')->group(function ()
         Route::delete('{id}/force-delete', [EventController::class, 'forceDelete']);
     });
 
+<<<<<<< HEAD
     Route::apiResource('careers', CareerController::class);
     Route::prefix('careers')->group(function () {
         Route::patch('{id}/toggle-status', [CareerController::class, 'toggleStatus']);
@@ -82,4 +103,11 @@ Route::middleware(['auth:api', 'throttle:api'])->prefix('v1')->group(function ()
         Route::delete('{id}/force-delete', [CareerController::class, 'forceDelete']);
     });
 
+=======
+    Route::apiResource('plans', PlanController::class);
+    Route::prefix('plans')->group(function () {
+        Route::patch('{id}/activate', [PlanController::class, 'activate']);
+        Route::patch('{id}/deactivate', [PlanController::class, 'deactivate']);
+    });
+>>>>>>> 0fdb880 (Added contact module)
 });

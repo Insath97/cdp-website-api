@@ -42,6 +42,14 @@ class Event extends Model
     ];
 
      /**
+     * Scope to filter active events.
+     */
+    public function scopeActive($query)
+    {
+        return $query->where('is_active', true);
+    }
+
+    /**
      * Scope to search events.
      */
     public function scopeSearch($query, $search)
