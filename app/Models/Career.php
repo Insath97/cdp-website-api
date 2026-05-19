@@ -65,4 +65,12 @@ class Career extends Model
     {
         return $this->belongsToMany(Benefit::class, 'career_benefits');
     }
+
+    /**
+     * Get the applications for this career.
+     */
+    public function applications()
+    {
+        return $this->hasMany(CareerApplication::class);
+    }
 }

@@ -16,6 +16,7 @@ use App\Http\Controllers\V1\CareerController;
 use App\Http\Controllers\V1\ContactController;
 use App\Http\Controllers\V1\ContactTypeController;
 use App\Http\Controllers\V1\DatabaseBackupController;
+use App\Http\Controllers\V1\CareerApplicationController;
 
 
 Route::prefix('v1')->middleware('throttle:auth')->group(function () {
@@ -97,5 +98,10 @@ Route::middleware(['auth', 'throttle:api'])->prefix('v1')->group(function () {
     Route::prefix('plans')->group(function () {
         Route::patch('{id}/activate', [PlanController::class, 'activate']);
         Route::patch('{id}/deactivate', [PlanController::class, 'deactivate']);
+    });
+
+    Route::apiResource('career-applications', CareerApplicationController::class)->only(['index', 'show']);
+    Route::prefix('career-applications')->group(function () {
+        Route::patch('{id}/status', [CareerApplicationController::class, 'updateStatus']);
     });
 });

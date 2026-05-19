@@ -5,14 +5,20 @@ namespace App\Http\Controllers\V1\Public;
 use App\Http\Controllers\Controller;
 use App\Models\SystemSetting;
 use App\Models\Career;
+use App\Models\CareerApplication;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use App\Http\Requests\CreateCareerRequest;
+use App\Http\Requests\StoreCareerApplicationRequest;
 use App\Mail\CareerNotificationMail;
-
+use App\Mail\CareerApplicationMail;
+use App\Traits\ActivityLogTrait;
+use App\Traits\FileUploadTrait;
+use Illuminate\Support\Str;
 
 class PublicCareerController extends Controller
 {
+    use ActivityLogTrait, FileUploadTrait;
     /**
      * Display a listing of active and unexpired career postings.
      */
@@ -101,37 +107,73 @@ class PublicCareerController extends Controller
             ], 500);
         }
     }
-
-
+    
     /**
-     * Store a newly created career posting in storage.
+     * Submit a career application from the public website.
      */
-    public function store(CreateCareerRequest $request)
+    public function apply(StoreCareerApplicationRequest $request)
     {
         try {
-
             $data = $request->validated();
 
-            $career = Career::create($data);
-            $notificationEmail = SystemSetting::getValue('contact_notification_email', config('mail.from.address'));
+            // 1. Generate unique application code
+            // APP-{YYYYMMDD}-{RANDOM_HEX_6_CHARS}
+            $date = date('Ymd');
+            do {
+                $code = 'APP-' . $date . '-' . strtoupper(Str::random(6));
+            } while (CareerApplication::query()->where('application_code', $code)->exists());
+            
+            $data['application_code'] = $code;
 
-            Mail::to($notificationEmail)
-                ->send(new CareerNotificationMail($career));
+            // 2. Handle resume file upload
+            if ($request->hasFile('resume')) {
+                $filepath = $this->handleFileUpload(
+                    $request,
+                    'resume',
+                    null,
+                    'resumes',
+                    'resume_' . $code
+                );
+                if ($filepath) {
+                    $data['resume_path'] = $filepath;
+                }
+            }
+
+            // 3. Set default status
+            $data['status'] = 'applied';
+
+            // 4. Create career application record
+            $application = CareerApplication::create($data);
+
+            // Load career relationship for the email
+            $application->load('career');
+
+            // 5. Send notification email to the administrator
+            $notificationEmail = SystemSetting::getValue('career_mail', config('mail.from.address'));
+            
+            if ($notificationEmail) {
+                try {
+                    Mail::to($notificationEmail)->send(new CareerApplicationMail($application));
+                    $this->logActivity('MAIL_SENT', 'Career Application', "Job application notification sent to: {$notificationEmail}");
+                } catch (\Exception $mailException) {
+                    $this->logActivity('MAIL_FAILED', 'Career Application', "Failed to send job application email to: {$notificationEmail}. Error: " . $mailException->getMessage());
+                }
+            }
+
+            $this->logActivity('CREATE', 'Career Application', "Job application {$code} submitted successfully by {$application->fullname}");
 
             return response()->json([
                 'status' => 'success',
-                'message' => 'Career created successfully',
-                'notified_to' => $notificationEmail,
-                'data' => $career
-            ]);
-        } catch (\Throwable $th) {
+                'message' => 'Your application has been submitted successfully!',
+                'application_code' => $code,
+                'data' => $application
+            ], 201);
 
+        } catch (\Throwable $th) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Failed to create career',
-                'error' => config('app.debug')
-                    ? $th->getMessage()
-                    : 'Internal server error'
+                'message' => 'Failed to submit application',
+                'error' => config('app.debug') ? $th->getMessage() : 'Internal server error'
             ], 500);
         }
     }

@@ -95,6 +95,11 @@ class PermissionsSeeder extends Seeder
             ['name' => 'Career Force Delete',   'group_name' => 'Career Permissions'],
             ['name' => 'Career Restore',        'group_name' => 'Career Permissions'],
             ['name' => 'Career Toggle Active',  'group_name' => 'Career Permissions'],
+
+            /* Career Application Management */
+            ['name' => 'Career Application Index',          'group_name' => 'Career Application Permissions'],
+            ['name' => 'Career Application Show',           'group_name' => 'Career Application Permissions'],
+            ['name' => 'Career Application Update Status',  'group_name' => 'Career Application Permissions'],
         ];
 
         foreach ($permissions as $permission) {
