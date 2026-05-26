@@ -360,7 +360,7 @@ class EventController extends Controller implements HasMiddleware
     public function destroy(string $id)
     {
         try {
-            $event = Event::query()->find($id);
+            $event = Event::find($id);
             if (! $event) {
                 return response()->json([
                     'status' => 'error',
@@ -370,7 +370,7 @@ class EventController extends Controller implements HasMiddleware
             }
 
             $name = $event->title;
-            if (! $event->query()->delete()) {
+            if (! $event->delete()) {
                 return response()->json([
                     'status' => 'error',
                     'message' => 'Failed to soft delete event',
