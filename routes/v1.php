@@ -17,6 +17,7 @@ use App\Http\Controllers\V1\ContactController;
 use App\Http\Controllers\V1\ContactTypeController;
 use App\Http\Controllers\V1\DatabaseBackupController;
 use App\Http\Controllers\V1\CareerApplicationController;
+use App\Http\Controllers\V1\DashboardController;
 
 
 Route::prefix('v1')->middleware('throttle:auth')->group(function () {
@@ -26,6 +27,7 @@ Route::prefix('v1')->middleware('throttle:auth')->group(function () {
 /* protected routes */
 Route::middleware(['auth', 'throttle:api'])->prefix('v1')->group(function () {
     Route::get('me', [AuthController::class, 'me']);
+    Route::get('dashboard', [DashboardController::class, 'index']);
     Route::post('logout', [AuthController::class, 'logout']);
 
     Route::get('permissions/list/', [PermissionController::class, 'getAvailablePermissions']);

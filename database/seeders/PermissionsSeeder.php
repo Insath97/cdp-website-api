@@ -23,6 +23,7 @@ class PermissionsSeeder extends Seeder
             ['name' => 'Role Create', 'group_name' => 'Access Management Permissions'],
             ['name' => 'Role Update', 'group_name' => 'Access Management Permissions'],
             ['name' => 'Role Delete', 'group_name' => 'Access Management Permissions'],
+            ['name' => 'Dashboard Index', 'group_name' => 'Access Management Permissions'],
 
             /* User Management */
             ['name' => 'User Index',  'group_name' => 'User Permissions'],
