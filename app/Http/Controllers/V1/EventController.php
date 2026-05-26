@@ -100,7 +100,15 @@ class EventController extends Controller implements HasMiddleware
             }
 
             $data['created_by'] = Auth::id();
-            $data['status'] = $data['status'] ?? Event::STATUS_PENDING;
+            
+            $canApprove = Auth::user()->hasRole('Super Admin') || Auth::user()->can('Event Approve');
+            $requestedStatus = $request->input('status', Event::STATUS_PENDING);
+
+            if ($canApprove) {
+                $data['status'] = $requestedStatus;
+            } else {
+                $data['status'] = Event::STATUS_PENDING;
+            }
 
             if (in_array($data['status'], [Event::STATUS_APPROVED, Event::STATUS_REJECTED])) {
                 $data['decision_by'] = Auth::id();
@@ -111,6 +119,10 @@ class EventController extends Controller implements HasMiddleware
                         'message' => 'rejected_reason is required when rejecting',
                     ], 422);
                 }
+            } else {
+                $data['decision_by'] = null;
+                $data['decision_at'] = null;
+                $data['rejected_reason'] = null;
             }
 
             $event = Event::create($data);
@@ -253,6 +265,14 @@ class EventController extends Controller implements HasMiddleware
                 $new = $data['status'];
                 $old = $event->status;
                 if ($new !== $old) {
+                    $canApprove = Auth::user()->hasRole('Super Admin') || Auth::user()->can('Event Approve');
+                    if (!$canApprove && in_array($new, [Event::STATUS_APPROVED, Event::STATUS_REJECTED])) {
+                        return response()->json([
+                            'status' => 'error',
+                            'message' => 'You do not have permission to approve or reject events.',
+                        ], 403);
+                    }
+
                     if (in_array($new, [Event::STATUS_APPROVED, Event::STATUS_REJECTED])) {
                         $data['decision_by'] = Auth::id();
                         $data['decision_at'] = now();

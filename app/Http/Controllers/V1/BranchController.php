@@ -175,7 +175,7 @@ class BranchController extends Controller implements HasMiddleware
     public function destroy(string $id)
     {
         try {
-            $branch = Branch::query()->find($id);
+            $branch = Branch::find($id);
 
             if (!$branch) {
                 return response()->json([
@@ -186,7 +186,7 @@ class BranchController extends Controller implements HasMiddleware
             }
 
             $branchName = $branch->name;
-            $branch->query()->delete();
+            $branch->delete();
 
             $this->logActivity('DELETE', 'Branch', "Deleted branch: {$branchName}");
 

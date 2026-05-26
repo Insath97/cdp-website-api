@@ -177,7 +177,7 @@ class ContactTypeController extends Controller
     public function destroy(string $id)
     {
         try{
-            $contact_type = ContactType::query()->find($id);
+            $contact_type = ContactType::find($id);
 
             if (!$contact_type) {
                 return response()->json([
@@ -190,7 +190,7 @@ class ContactTypeController extends Controller
             DB::beginTransaction();
 
             $ContactTypeName = $contact_type->name;
-            $contact_type->query()->delete();
+            $contact_type->delete();
 
             DB::commit();
 

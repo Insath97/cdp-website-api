@@ -217,7 +217,7 @@ class ServiceController extends Controller implements HasMiddleware
     public function destroy(string $id)
     {
          try {
-            $service = Service::query()->find($id);
+            $service = Service::find($id);
 
             if (!$service) {
                 return response()->json([
@@ -228,7 +228,7 @@ class ServiceController extends Controller implements HasMiddleware
             }
 
             $serviceName = $service->name;
-            $service->query()->delete();
+            $service->delete();
 
             $this->logActivity('DELETE', 'Service', "Deleted service: {$serviceName}");
 

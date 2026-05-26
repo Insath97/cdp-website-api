@@ -218,7 +218,7 @@ class PlanController extends Controller implements HasMiddleware
             $this->deleteFile($plan->image);
 
             $planName = $plan->maintitle;
-            $plan->query()->delete();
+            $plan->delete();
 
             $this->logActivity('DELETE', 'Plan', "Deleted plan: {$planName}");
 
