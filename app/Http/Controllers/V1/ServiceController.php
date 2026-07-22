@@ -227,7 +227,7 @@ class ServiceController extends Controller implements HasMiddleware
                 ], 404);
             }
 
-            $serviceName = $service->name;
+            $serviceName = $service->title;
             $service->delete();
 
             $this->logActivity('DELETE', 'Service', "Deleted service: {$serviceName}");
