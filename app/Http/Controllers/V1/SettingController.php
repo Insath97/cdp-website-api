@@ -87,7 +87,7 @@ class SettingController extends Controller implements HasMiddleware
 
             DB::commit();
 
-            $this->logActivity('Setting', 'Update', "Updated system settings", $data);
+            $this->logActivity('UPDATE', 'Setting', "Updated system settings", $data);
 
             return response()->json([
                 'status' => 'success',

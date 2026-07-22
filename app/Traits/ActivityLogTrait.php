@@ -14,9 +14,10 @@ trait ActivityLogTrait
      * @param string $action
      * @param string $module
      * @param string $description
+     * @param array|null $payload
      * @return void
      */
-    public function logActivity(string $action, string $module, string $description)
+    public function logActivity(string $action, string $module, string $description, ?array $payload = null)
     {
         try {
             // DB logging
@@ -25,12 +26,14 @@ trait ActivityLogTrait
                 'action' => $action,
                 'module' => $module,
                 'description' => $description,
+                'payload' => $payload,
                 'ip_address' => request()->ip(),
                 'user_agent' => request()->userAgent(), 
             ]);
 
             // Laravel file logging
-            Log::info("[{$module}] {$action}: {$description} | User ID: " . (Auth::guard('api')->id() ?? 'Guest') . " | IP: " . request()->ip());
+            $payloadStr = $payload ? ' | Payload: ' . json_encode($payload) : '';
+            Log::info("[{$module}] {$action}: {$description}{$payloadStr} | User ID: " . (Auth::guard('api')->id() ?? 'Guest') . " | IP: " . request()->ip());
 
         } catch (\Throwable $th) {
             // Silently fail DB logging but log the failure to Laravel logs
