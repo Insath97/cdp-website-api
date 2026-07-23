@@ -35,10 +35,15 @@ class UpdateSettingRequest extends FormRequest
             'youtube_url' => 'nullable|url|max:255',
             'twitter_url' => 'nullable|url|max:255',
             'linkedin_url' => 'nullable|url|max:255',
+            'office_address' => 'nullable|string|max:1000',
+            'contact_notification_email' => 'nullable|email|max:255',
+            'enable_contact_notification' => 'nullable|in:0,1',
             'mobile_number' => 'nullable|string|max:255',
             'whatsapp_number' => 'nullable|string|max:255',
             'head_office_address' => 'nullable|string|max:1000',
             'company_registration_number' => 'nullable|string|max:255',
+            'career_mail' => 'nullable|email|max:255',
+            'enable_job_alert_notification' => 'nullable|in:0,1',
         ];
     }
 
