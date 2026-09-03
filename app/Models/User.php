@@ -73,13 +73,17 @@ class User extends Authenticatable implements JWTSubject
             'name'      => $this->name,
             'username'  => $this->username,
             'email'     => $this->email,
-            'user_type' => $this->user_type,
         ];
     }
 
     public function canLogin(): bool
     {
         return $this->is_active && $this->can_login;
+    }
+
+    public function isSuperAdmin(): bool
+    {
+        return $this->hasRole('Super Admin');
     }
 
     public function updateLastLogin($ipAddress = null)
