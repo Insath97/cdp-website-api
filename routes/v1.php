@@ -98,6 +98,7 @@ Route::middleware(['auth', 'throttle:api'])->prefix('v1')->group(function () {
 
     Route::apiResource('plans', PlanController::class);
     Route::prefix('plans')->group(function () {
+        Route::patch('{id}/toggle-status', [PlanController::class, 'toggleStatus']);
         Route::patch('{id}/activate', [PlanController::class, 'activate']);
         Route::patch('{id}/deactivate', [PlanController::class, 'deactivate']);
     });

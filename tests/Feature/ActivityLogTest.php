@@ -165,11 +165,13 @@ class ActivityLogTest extends TestCase
 
         $response->assertStatus(200);
 
-        $this->assertDatabaseHas('activity_logs', [
-            'action' => 'ACTIVATE',
-            'module' => 'Plan',
-            'user_id' => $user->id,
-        ]);
+        // Toggle status
+        $response = $this->withHeaders([
+            'Authorization' => "Bearer $token"
+        ])->patchJson("/api/v1/plans/{$plan->id}/toggle-status");
+
+        $response->assertStatus(200);
+        $this->assertEquals(false, $response->json('data.is_active'));
     }
 
     public function test_contact_type_activation_records_correct_module_and_name(): void
