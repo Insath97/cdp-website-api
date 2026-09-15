@@ -33,6 +33,9 @@ class DashboardController extends Controller implements HasMiddleware
         try {
             // 1. Cards statistics
             $totalUsers = User::count();
+            $activeUsers = User::where('is_active', true)->count();
+            $totalRoles = \Spatie\Permission\Models\Role::count();
+            $totalPermissions = \Spatie\Permission\Models\Permission::count();
             $totalContacts = Contact::count();
             $publishedBlogs = Event::where('status', 'approved')->count();
             $totalBranches = Branch::count();
@@ -90,8 +93,15 @@ class DashboardController extends Controller implements HasMiddleware
                 'status' => 'success',
                 'message' => 'Dashboard statistics retrieved successfully',
                 'data' => [
+                    'total_users' => $totalUsers,
+                    'active_users' => $activeUsers,
+                    'total_roles' => $totalRoles,
+                    'total_permissions' => $totalPermissions,
                     'cards' => [
                         'total_users' => $totalUsers,
+                        'active_users' => $activeUsers,
+                        'total_roles' => $totalRoles,
+                        'total_permissions' => $totalPermissions,
                         'total_contacts' => $totalContacts,
                         'published_blogs' => $publishedBlogs,
                         'total_branches' => $totalBranches,

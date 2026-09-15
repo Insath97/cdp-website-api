@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cookie;
+use App\Models\User;
 
 class AuthController extends Controller
 {
@@ -31,28 +32,47 @@ class AuthController extends Controller
 
             $credentials = $request->only('email', 'password');
 
-            if (!$token = Auth::guard('api')->attempt($credentials)) {
+            $user = User::where('email', $request->email)->first();
+
+            if (!$user) {
                 return response()->json([
                     'status' => 'error',
-                    'message' => 'Invalid credentials'
+                    'message' => 'No account found with this email address.',
+                    'errors' => [
+                        'email' => ['No account found with this email address.']
+                    ]
                 ], 401);
             }
 
-            $user = auth('api')->user();
+            if (!$token = Auth::guard('api')->attempt($credentials)) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'The password you entered is incorrect.',
+                    'errors' => [
+                        'password' => ['The password you entered is incorrect. Please try again.']
+                    ]
+                ], 401);
+            }
 
             if (!$user->canLogin()) {
                 Auth::guard('api')->logout();
                 return response()->json([
                     'status' => 'error',
-                    'message' => 'Account is deactivated'
+                    'message' => 'Account is deactivated',
+                    'errors' => [
+                        'email' => ['Your account has been deactivated. Please contact administrator.']
+                    ]
                 ], 401);
             }
 
             if (!$user->roles()->exists()) {
                 Auth::guard('api')->logout();
                 return response()->json([
-                    'success' => false,
-                    'message' => 'No admin role assigned. Please contact Super Admin.'
+                    'status' => 'error',
+                    'message' => 'No admin role assigned. Please contact Super Admin.',
+                    'errors' => [
+                        'email' => ['No admin role assigned. Please contact Super Admin.']
+                    ]
                 ], 403);
             }
 
