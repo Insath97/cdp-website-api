@@ -92,6 +92,8 @@ class UserController extends Controller implements HasMiddleware
                 return $userData;
             });
 
+            $this->logActivity('INDEX', 'User', "Viewed users list");
+
             return response()->json([
                 'status' => 'success',
                 'message' => 'Users retrieved successfully',
@@ -139,7 +141,10 @@ class UserController extends Controller implements HasMiddleware
 
             $user->assignRole($data['role']);
 
-            $this->logActivity('CREATE', 'User', "Created admin user: {$user->name} ({$user->email})");
+            $this->logActivity('CREATE', 'User', "Created admin user: {$user->name} ({$user->email})", [
+                'target_user_id' => $user->id,
+                'role' => $data['role'] ?? null,
+            ]);
 
             try {
                 $emailData = [
@@ -207,6 +212,8 @@ class UserController extends Controller implements HasMiddleware
                 }
             }
 
+            $this->logActivity('SHOW', 'User', "Viewed user details: {$user->name} ({$user->email})", ['target_user_id' => $user->id]);
+
             return response()->json([
                 'status' => 'success',
                 'message' => 'User retrieved successfully',
@@ -269,7 +276,10 @@ class UserController extends Controller implements HasMiddleware
                 $user->syncRoles([$data['role']]);
             }
 
-            $this->logActivity('UPDATE', 'User', "Updated user: {$user->name} ({$user->email})");
+            $this->logActivity('UPDATE', 'User', "Updated user: {$user->name} ({$user->email})", [
+                'target_user_id' => $user->id,
+                'role' => $data['role'] ?? null,
+            ]);
 
             $user->load(['roles' => function ($q) {
                 $q->select('id', 'name');
@@ -334,7 +344,9 @@ class UserController extends Controller implements HasMiddleware
             $userEmail = $user->email;
             $user->delete();
 
-            $this->logActivity('DELETE', 'User', "Deleted user: {$userName} ({$userEmail})");
+            $this->logActivity('DELETE', 'User', "Deleted user: {$userName} ({$userEmail})", [
+                'deleted_user_email' => $userEmail,
+            ]);
 
             return response()->json([
                 'status' => 'success',

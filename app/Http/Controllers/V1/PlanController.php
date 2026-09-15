@@ -28,7 +28,7 @@ class PlanController extends Controller implements HasMiddleware
             new Middleware('permission:Plan Index', only: ['index', 'show']),
             new Middleware('permission:Plan Create', only: ['store']),
             new Middleware('permission:Plan Update', only: ['update']),
-            new Middleware('permission:Plan Toggle Active', only: ['toggleStatus']),
+            new Middleware('permission:Plan Toggle Active', only: ['toggleStatus', 'activate', 'deactivate']),
             new Middleware('permission:Plan Delete', only: ['destroy']),
         ];
     }
@@ -54,6 +54,8 @@ class PlanController extends Controller implements HasMiddleware
 
             $query->orderBy('created_at', 'desc');
             $plans = $query->paginate($perPage);
+
+            $this->logActivity('INDEX', 'Plan', "Viewed plans list");
 
             return response()->json([
                 'status' => 'success',
@@ -127,6 +129,8 @@ class PlanController extends Controller implements HasMiddleware
                     'data' => []
                 ], 404);
             }
+
+            $this->logActivity('SHOW', 'Plan', "Viewed plan details: {$plan->maintitle}", ['plan_id' => $plan->id]);
 
             return response()->json([
                 'status' => 'success',
@@ -236,12 +240,92 @@ class PlanController extends Controller implements HasMiddleware
     }
 
     /**
+     * Activate the plan.
+     */
+    public function activate(string $id)
+    {
+        try {
+            $plan = Plan::find($id);
+
+            if (!$plan) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Plan not found',
+                ], 404);
+            }
+
+            if ($plan->is_active) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Plan is already active',
+                ], 422);
+            }
+
+            $plan->update(['is_active' => true]);
+
+            $this->logActivity('ACTIVATE', 'Plan', "Activated plan: {$plan->maintitle}");
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Plan activated successfully',
+                'data' => $plan
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to activate plan',
+                'error' => config('app.debug') ? $th->getMessage() : 'Internal server error'
+            ], 500);
+        }
+    }
+
+    /**
+     * Deactivate the plan.
+     */
+    public function deactivate(string $id)
+    {
+        try {
+            $plan = Plan::find($id);
+
+            if (!$plan) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Plan not found',
+                ], 404);
+            }
+
+            if (!$plan->is_active) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Plan is already inactive',
+                ], 422);
+            }
+
+            $plan->update(['is_active' => false]);
+
+            $this->logActivity('DEACTIVATE', 'Plan', "Deactivated plan: {$plan->maintitle}");
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Plan deactivated successfully',
+                'data' => $plan
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to deactivate plan',
+                'error' => config('app.debug') ? $th->getMessage() : 'Internal server error'
+            ], 500);
+        }
+    }
+
+    /**
      * Toggle the status of the plan.
      */
     public function toggleStatus(string $id)
     {
         try {
-            $plan = Plan::queryfind($id);
+            $plan = Plan::find($id);
 
             if (!$plan) {
                 return response()->json([
@@ -252,8 +336,9 @@ class PlanController extends Controller implements HasMiddleware
 
             $plan->update(['is_active' => !$plan->is_active]);
             $status = $plan->is_active ? 'activated' : 'deactivated';
+            $action = $plan->is_active ? 'ACTIVATE' : 'DEACTIVATE';
 
-            $this->logActivity('TOGGLE_STATUS', 'Plan', ucfirst($status) . " plan: {$plan->maintitle}");
+            $this->logActivity($action, 'Plan', ucfirst($status) . " plan: {$plan->maintitle}");
 
             return response()->json([
                 'status' => 'success',

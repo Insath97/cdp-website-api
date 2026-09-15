@@ -8,9 +8,11 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
+use App\Traits\ActivityLogTrait;
 
 class ActivityLogController extends Controller implements HasMiddleware
 {
+    use ActivityLogTrait;
     /**
      * Get the middleware assigned to the controller.
      */
@@ -66,6 +68,8 @@ class ActivityLogController extends Controller implements HasMiddleware
 
             $logs = $query->paginate($perPage);
 
+            $this->logActivity('INDEX', 'Activity Log', "Viewed activity logs list");
+
             return response()->json([
                 'status' => 'success',
                 'message' => 'Activity logs retrieved successfully',
@@ -94,6 +98,8 @@ class ActivityLogController extends Controller implements HasMiddleware
                     'message' => 'Activity log not found',
                 ], 404);
             }
+
+            $this->logActivity('SHOW', 'Activity Log', "Viewed activity log details #{$id}", ['log_id' => $id]);
 
             return response()->json([
                 'status' => 'success',

@@ -8,9 +8,12 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cookie;
 use App\Models\User;
+use App\Traits\ActivityLogTrait;
 
 class AuthController extends Controller
 {
+    use ActivityLogTrait;
+
     /** 
      * Admin Login
      */
@@ -35,6 +38,11 @@ class AuthController extends Controller
             $user = User::where('email', $request->email)->first();
 
             if (!$user) {
+                $this->logActivity('FAILED_LOGIN', 'Auth', "Failed login attempt: Email '{$request->email}' not found", [
+                    'email' => $request->email,
+                    'reason' => 'email_not_found',
+                ]);
+
                 return response()->json([
                     'status' => 'error',
                     'message' => 'No account found with this email address.',
@@ -45,6 +53,11 @@ class AuthController extends Controller
             }
 
             if (!$token = Auth::guard('api')->attempt($credentials)) {
+                $this->logActivity('FAILED_LOGIN', 'Auth', "Failed login attempt: Incorrect password for '{$user->email}'", [
+                    'email' => $user->email,
+                    'reason' => 'invalid_password',
+                ], $user->id);
+
                 return response()->json([
                     'status' => 'error',
                     'message' => 'The password you entered is incorrect.',
@@ -55,6 +68,11 @@ class AuthController extends Controller
             }
 
             if (!$user->canLogin()) {
+                $this->logActivity('LOGIN_BLOCKED', 'Auth', "Blocked login attempt: Account deactivated for '{$user->email}'", [
+                    'email' => $user->email,
+                    'reason' => 'account_deactivated',
+                ], $user->id);
+
                 Auth::guard('api')->logout();
                 return response()->json([
                     'status' => 'error',
@@ -66,6 +84,11 @@ class AuthController extends Controller
             }
 
             if (!$user->roles()->exists()) {
+                $this->logActivity('LOGIN_BLOCKED', 'Auth', "Blocked login attempt: No admin role assigned for '{$user->email}'", [
+                    'email' => $user->email,
+                    'reason' => 'no_role_assigned',
+                ], $user->id);
+
                 Auth::guard('api')->logout();
                 return response()->json([
                     'status' => 'error',
@@ -77,6 +100,11 @@ class AuthController extends Controller
             }
 
             $user->updateLastLogin($request->ip());
+
+            $this->logActivity('LOGIN', 'Auth', "User {$user->name} ({$user->email}) logged in successfully", [
+                'email' => $user->email,
+                'user_id' => $user->id,
+            ], $user->id);
 
             $cookie = cookie(
                 'auth_token',
@@ -131,8 +159,18 @@ class AuthController extends Controller
     public function logout(Request $request)
     {
         try {
+            $user = Auth::guard('api')->user();
+            $userId = $user ? $user->id : null;
+            $userName = $user ? $user->name : 'Unknown';
+
             // Logout the user (invalidates the token)
             Auth::guard('api')->logout();
+
+            if ($userId) {
+                $this->logActivity('LOGOUT', 'Auth', "User {$userName} logged out successfully", [
+                    'user_id' => $userId,
+                ], $userId);
+            }
 
             // Create an expired cookie to remove it from browser
             $cookie = Cookie::forget('auth_token');

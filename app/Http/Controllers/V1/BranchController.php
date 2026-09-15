@@ -55,6 +55,8 @@ class BranchController extends Controller implements HasMiddleware
             $query->orderBy('created_at', 'desc');
             $branches = $query->paginate($perPage);
 
+            $this->logActivity('INDEX', 'Branch', "Viewed branches list");
+
             return response()->json([
                 'status' => 'success',
                 'message' => 'Branches retrieved successfully',
@@ -114,6 +116,8 @@ class BranchController extends Controller implements HasMiddleware
                     'data' => []
                 ], 404);
             }
+
+            $this->logActivity('SHOW', 'Branch', "Viewed branch details: {$branch->name}", ['branch_id' => $branch->id]);
 
             return response()->json([
                 'status' => 'success',

@@ -12,9 +12,11 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Carbon\Carbon;
+use App\Traits\ActivityLogTrait;
 
 class DashboardController extends Controller implements HasMiddleware
 {
+    use ActivityLogTrait;
     /**
      * Get the middleware assigned to the controller.
      */
@@ -88,6 +90,8 @@ class DashboardController extends Controller implements HasMiddleware
                     $inquiriesData[$targetIndex]++;
                 }
             }
+
+            $this->logActivity('INDEX', 'Dashboard', "Viewed dashboard statistics");
 
             return response()->json([
                 'status' => 'success',

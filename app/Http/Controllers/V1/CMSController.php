@@ -42,6 +42,8 @@ class CMSController extends Controller implements HasMiddleware
 
             $contents = $query->get()->groupBy(['page', 'section']);
 
+            $this->logActivity('INDEX', 'CMS', "Viewed CMS contents" . ($page ? " for page: {$page}" : " list"));
+
             return response()->json([
                 'status' => 'success',
                 'message' => 'CMS contents retrieved successfully',
@@ -130,7 +132,10 @@ class CMSController extends Controller implements HasMiddleware
 
             DB::commit();
 
-            $this->logActivity('CMS', 'Update', "Bulk updated " . count($updatedContents) . " CMS items");
+            $this->logActivity('UPDATE', 'CMS', "Bulk updated " . count($updatedContents) . " CMS items", [
+                'updated_count' => count($updatedContents),
+                'keys' => collect($updatedContents)->pluck('key')->unique()->values()->all(),
+            ]);
 
             return response()->json([
                 'status' => 'success',

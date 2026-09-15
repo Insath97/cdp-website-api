@@ -31,6 +31,8 @@ class SettingController extends Controller implements HasMiddleware
         try {
             $settings = SystemSetting::all()->pluck('value', 'key');
 
+            $this->logActivity('INDEX', 'Setting', "Viewed system settings");
+
             return response()->json([
                 'status' => 'success',
                 'message' => 'Settings retrieved successfully',

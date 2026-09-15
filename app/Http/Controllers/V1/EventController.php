@@ -61,6 +61,8 @@ class EventController extends Controller implements HasMiddleware
             $query->orderBy('created_at', 'desc');
             $events = $query->paginate($perPage);
 
+            $this->logActivity('INDEX', 'Event', "Viewed events list");
+
             return response()->json([
                 'status' => 'success',
                 'message' => 'Events retrieved successfully',
@@ -218,6 +220,8 @@ class EventController extends Controller implements HasMiddleware
                     'data' => [],
                 ], 404);
             }
+
+            $this->logActivity('SHOW', 'Event', "Viewed event details: {$event->title}", ['event_id' => $event->id]);
 
             return response()->json([
                 'status' => 'success',
@@ -600,6 +604,8 @@ class EventController extends Controller implements HasMiddleware
     {
         try {
             $tags = Tag::orderBy('name', 'asc')->get(['id', 'name']);
+
+            $this->logActivity('INDEX', 'Event', "Viewed event tags list");
 
             return response()->json([
                 'status' => 'success',

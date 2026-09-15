@@ -58,6 +58,8 @@ class CareerApplicationController extends Controller implements HasMiddleware
             $query->orderBy('created_at', 'desc');
             $applications = $query->paginate($perPage);
 
+            $this->logActivity('INDEX', 'Career Application', "Viewed career applications list");
+
             return response()->json([
                 'status' => 'success',
                 'message' => 'Career applications retrieved successfully',
@@ -87,6 +89,8 @@ class CareerApplicationController extends Controller implements HasMiddleware
                     'data' => [],
                 ], 404);
             }
+
+            $this->logActivity('SHOW', 'Career Application', "Viewed career application details: {$application->fullname} ({$application->application_code})", ['application_id' => $application->id]);
 
             return response()->json([
                 'status' => 'success',

@@ -38,6 +38,8 @@ class ContactController extends Controller
             $query->orderBy('created_at', 'desc');
             $contacts = $query->paginate($perPage);
 
+            $this->logActivity('INDEX', 'Contact', "Viewed contacts list");
+
             return response()->json([
                 'status' => true,
                 'message' => 'Contacts fetched successfully',
@@ -111,6 +113,8 @@ class ContactController extends Controller
                 return response()->json(['status' => 'error', 'message' => 'Contact not found'], 404);
             }
 
+            $this->logActivity('SHOW', 'Contact', "Viewed contact message details from: {$contact->first_name} {$contact->last_name}", ['contact_id' => $contact->id]);
+
             return response()->json([
                 'status' => true,
                 'message' => 'Contact fetched successfully',
@@ -133,9 +137,10 @@ class ContactController extends Controller
                 return response()->json(['status' => 'error', 'message' => 'Contact not found'], 404);
             }
 
-            $contact->query()->delete();
+            $contactName = trim("{$contact->first_name} {$contact->last_name}");
+            $contact->delete();
 
-            $this->logActivity('DELETE', 'Contact', "Deleted contact: {$contact->first_name} {$contact->last_name}");
+            $this->logActivity('DELETE', 'Contact', "Deleted contact: {$contactName}");
 
             return response()->json([
                 'status' => true,

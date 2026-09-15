@@ -36,6 +36,8 @@ class ContactTypeController extends Controller
             $query->orderBy('created_at', 'desc');
             $contact_types = $query->paginate($perPage);
 
+            $this->logActivity('INDEX', 'Contact Type', "Viewed contact types list");
+
             return response()->json([
                 'status' => true,
                 'message' => 'Contact types fetched successfully',
@@ -106,6 +108,8 @@ class ContactTypeController extends Controller
                     'data' => null
                 ], 404);
             }
+
+            $this->logActivity('SHOW', 'Contact Type', "Viewed contact type details: {$contact_type->name}", ['contact_type_id' => $contact_type->id]);
 
             return response()->json([
                 'status' => true,
@@ -215,79 +219,78 @@ class ContactTypeController extends Controller
      /**
      * Activate the contact type.
      */
-      public function activate(string $id)
+    public function activate(string $id)
     {
         try {
-            $contact = ContactType::query()->find($id);
+            $contactType = ContactType::query()->find($id);
 
-            if (!$contact) {
+            if (!$contactType) {
                 return response()->json([
                     'status' => 'error',
-                    'message' => 'Contact not found',
+                    'message' => 'Contact type not found',
                 ], 404);
             }
 
-            if ($contact->is_active) {
+            if ($contactType->is_active) {
                 return response()->json([
                     'status' => 'error',
-                    'message' => 'Contact is already active',
+                    'message' => 'Contact type is already active',
                 ], 422);
             }
 
-            $contact->update(['is_active' => true]);
+            $contactType->update(['is_active' => true]);
 
-            $this->logActivity('ACTIVATE', 'Contact', "Activated contact: {$contact->first_name} {$contact->last_name}");
+            $this->logActivity('ACTIVATE', 'Contact Type', "Activated contact type: {$contactType->name} ({$contactType->code})");
 
             return response()->json([
                 'status' => 'success',
-                'message' => 'Contact activated successfully',
-                'data' => $contact
+                'message' => 'Contact type activated successfully',
+                'data' => $contactType
             ], 200);
         } catch (\Throwable $th) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Failed to activate contact',
+                'message' => 'Failed to activate contact type',
                 'error' => config('app.debug') ? $th->getMessage() : 'Internal server error'
             ], 500);
         }
     }
 
     /**
-     * Deactivate the contact.
+     * Deactivate the contact type.
      */
-
     public function deactivate(string $id)
     {
         try {
-            $contact = ContactType::query()->find($id);
+            $contactType = ContactType::query()->find($id);
 
-            if (! $contact) {
+            if (! $contactType) {
                 return response()->json([
                     'status' => 'error',
-                    'message' => 'Contact not found',
+                    'message' => 'Contact type not found',
                 ], 404);
             }
 
-            if (! $contact->is_active) {
+            if (! $contactType->is_active) {
                 return response()->json([
                     'status' => 'error',
-                    'message' => 'Contact is already inactive',
+                    'message' => 'Contact type is already inactive',
                 ], 422);
             }
 
-            $contact->update(['is_active' => false]);
+            $contactType->update(['is_active' => false]);
 
-            $this->logActivity('DEACTIVATE', 'Contact', "Deactivated contact: {$contact->first_name} {$contact->last_name}");
+            $this->logActivity('DEACTIVATE', 'Contact Type', "Deactivated contact type: {$contactType->name} ({$contactType->code})");
 
             return response()->json([
                 'status' => 'success',
-                'message' => 'Contact deactivated successfully',
-                'data' => $contact
+                'message' => 'Contact type deactivated successfully',
+                'data' => $contactType
             ], 200);
         } catch (\Throwable $th) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Failed to deactivate contact',
+                'message' => 'Failed to deactivate contact type',
                 'error' => config('app.debug') ? $th->getMessage() : 'Internal server error'
             ], 500);
         }

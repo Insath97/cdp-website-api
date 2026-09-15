@@ -57,6 +57,8 @@ class RoleController extends Controller implements HasMiddleware
                 ], 200);
             }
 
+            $this->logActivity('INDEX', 'Role', "Viewed roles list");
+
             return response()->json([
                 'status' => 'success',
                 'message' => 'Roles retrieved successfully',
@@ -89,7 +91,10 @@ class RoleController extends Controller implements HasMiddleware
                 $role->syncPermissions($permissions);
             }
 
-            $this->logActivity('CREATE', 'Role', "Created role: {$role->name}");
+            $this->logActivity('CREATE', 'Role', "Created role: {$role->name}", [
+                'role_id' => $role->id,
+                'permissions_count' => isset($data['permissions']) ? count($data['permissions']) : 0,
+            ]);
 
             return response()->json([
                 'status' => 'success',
@@ -108,6 +113,7 @@ class RoleController extends Controller implements HasMiddleware
     public function show(string $id)
     {
         try {
+            /** @var Role|null $role */
             $role = Role::with('permissions')->find($id);
 
             if (!$role) {
@@ -117,6 +123,8 @@ class RoleController extends Controller implements HasMiddleware
                     'data' => []
                 ], 404);
             }
+
+            $this->logActivity('SHOW', 'Role', "Viewed role details: {$role->name}", ['role_id' => $role->id]);
 
             return response()->json([
                 'status' => 'success',
@@ -139,6 +147,7 @@ class RoleController extends Controller implements HasMiddleware
         try {
             $data = $request->validated();
 
+            /** @var Role|null $role */
             $role = Role::find($id);
 
             if (!$role) {
@@ -162,7 +171,10 @@ class RoleController extends Controller implements HasMiddleware
                 $role->syncPermissions($permissions);
             }
 
-            $this->logActivity('UPDATE', 'Role', "Updated role: {$role->name}");
+            $this->logActivity('UPDATE', 'Role', "Updated role: {$role->name}", [
+                'role_id' => $role->id,
+                'permissions_count' => isset($data['permissions']) ? count($data['permissions']) : null,
+            ]);
 
             $role->load('permissions');
 
@@ -183,6 +195,7 @@ class RoleController extends Controller implements HasMiddleware
     public function destroy(string $id)
     {
         try {
+            /** @var Role|null $role */
             $role = Role::find($id);
 
             if (!$role) {
@@ -217,7 +230,7 @@ class RoleController extends Controller implements HasMiddleware
             $roleName = $role->name;
             $role->delete();
 
-            $this->logActivity('DELETE', 'Role', "Deleted role: {$roleName}");
+            $this->logActivity('DELETE', 'Role', "Deleted role: {$roleName}", ['role_id' => $id]);
 
             return response()->json([
                 'status' => 'success',
@@ -246,6 +259,8 @@ class RoleController extends Controller implements HasMiddleware
             $query->where('guard_name', 'api');
 
             $roles = $query->select('id', 'name', 'guard_name')->get();
+
+            $this->logActivity('INDEX', 'Role', "Fetched available roles list");
 
             return response()->json([
                 'status' => 'success',

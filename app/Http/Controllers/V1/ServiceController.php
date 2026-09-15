@@ -57,6 +57,8 @@ class ServiceController extends Controller implements HasMiddleware
             $query->orderBy('created_at', 'desc');
             $services = $query->paginate($perPage);
 
+            $this->logActivity('INDEX', 'Service', "Viewed services list");
+
             return response()->json([
                 'status' => 'success',
                 'message' => 'Services retrieved successfully',
@@ -135,6 +137,8 @@ class ServiceController extends Controller implements HasMiddleware
                     'data' => []
                 ], 404);
             }
+
+            $this->logActivity('SHOW', 'Service', "Viewed service details: {$service->title}", ['service_id' => $service->id]);
 
             return response()->json([
                 'status' => 'success',

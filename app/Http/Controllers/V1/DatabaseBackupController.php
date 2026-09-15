@@ -73,7 +73,7 @@ class DatabaseBackupController extends Controller implements HasMiddleware
                 throw new \Exception('Database backup file was not created or is empty.');
             }
 
-            $this->logActivity('SYSTEM', 'Database Export', "Exported database backup: {$filename}");
+            $this->logActivity('EXPORT', 'Database Backup', "Exported database backup: {$filename}", ['filename' => $filename]);
 
             return response()->download($path)->deleteFileAfterSend(true);
 

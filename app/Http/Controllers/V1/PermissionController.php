@@ -67,6 +67,8 @@ class PermissionController extends Controller implements HasMiddleware
                 ], 200);
             }
 
+            $this->logActivity('INDEX', 'Permission', "Viewed permissions list");
+
             return response()->json([
                 'status' => 'success',
                 'message' => 'Permissions retrieved successfully',
@@ -120,6 +122,8 @@ class PermissionController extends Controller implements HasMiddleware
                     'data' => []
                 ], 404);
             }
+
+            $this->logActivity('SHOW', 'Permission', "Viewed permission details: {$permission->name}", ['permission_id' => $permission->id]);
 
             return response()->json([
                 'status' => 'success',
@@ -220,6 +224,8 @@ class PermissionController extends Controller implements HasMiddleware
     {
         try {
             $permissions = Permission::select('id', 'group_name', 'name')->orderBy('id', 'asc')->get();
+
+            $this->logActivity('INDEX', 'Permission', "Fetched available permissions list");
 
             return response()->json([
                 'status' => 'success',
