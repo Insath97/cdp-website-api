@@ -70,6 +70,11 @@ class ContactTypeController extends Controller
             DB::beginTransaction();
 
             $validatedData = $request->validated();
+            
+            if (empty($validatedData['slug']) && !empty($validatedData['name'])) {
+                $validatedData['slug'] = \Illuminate\Support\Str::slug($validatedData['name']);
+            }
+
             $contact_type = ContactType::create($validatedData);
 
             DB::commit();
@@ -153,6 +158,11 @@ class ContactTypeController extends Controller
             DB::beginTransaction();
 
             $data = $request->all();
+            
+            if (empty($data['slug']) && !empty($data['name'])) {
+                $data['slug'] = \Illuminate\Support\Str::slug($data['name']);
+            }
+
             $contact_type->update($data);
 
             DB::commit();
