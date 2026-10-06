@@ -18,6 +18,8 @@ use App\Http\Controllers\V1\ContactTypeController;
 use App\Http\Controllers\V1\DatabaseBackupController;
 use App\Http\Controllers\V1\CareerApplicationController;
 use App\Http\Controllers\V1\DashboardController;
+use App\Http\Controllers\V1\FaqTypeController;
+use App\Http\Controllers\V1\FaqController;
 
 
 Route::prefix('v1')->middleware('throttle:auth')->group(function () {
@@ -107,5 +109,15 @@ Route::middleware(['auth', 'throttle:api'])->prefix('v1')->group(function () {
     Route::apiResource('career-applications', CareerApplicationController::class)->only(['index', 'show']);
     Route::prefix('career-applications')->group(function () {
         Route::patch('{id}/status', [CareerApplicationController::class, 'updateStatus']);
+    });
+
+    Route::apiResource('faq-types', FaqTypeController::class);
+    Route::prefix('faq-types')->group(function () {
+        Route::patch('{id}/toggle-status', [FaqTypeController::class, 'toggleStatus']);
+    });
+
+    Route::apiResource('faqs', FaqController::class);
+    Route::prefix('faqs')->group(function () {
+        Route::patch('{id}/toggle-status', [FaqController::class, 'toggleStatus']);
     });
 });

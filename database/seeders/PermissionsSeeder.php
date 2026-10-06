@@ -101,6 +101,20 @@ class PermissionsSeeder extends Seeder
             ['name' => 'Career Application Index',          'group_name' => 'Career Application Permissions'],
             ['name' => 'Career Application Show',           'group_name' => 'Career Application Permissions'],
             ['name' => 'Career Application Update Status',  'group_name' => 'Career Application Permissions'],
+
+            /* Faq Type Management */
+            ['name' => 'Faq Type Index',         'group_name' => 'Faq Type Permissions'],
+            ['name' => 'Faq Type Create',        'group_name' => 'Faq Type Permissions'],
+            ['name' => 'Faq Type Update',        'group_name' => 'Faq Type Permissions'],
+            ['name' => 'Faq Type Delete',        'group_name' => 'Faq Type Permissions'],
+            ['name' => 'Faq Type Toggle Active', 'group_name' => 'Faq Type Permissions'],
+
+            /* Faq Management */
+            ['name' => 'Faq Index',         'group_name' => 'Faq Permissions'],
+            ['name' => 'Faq Create',        'group_name' => 'Faq Permissions'],
+            ['name' => 'Faq Update',        'group_name' => 'Faq Permissions'],
+            ['name' => 'Faq Delete',        'group_name' => 'Faq Permissions'],
+            ['name' => 'Faq Toggle Active', 'group_name' => 'Faq Permissions'],
         ];
 
         foreach ($permissions as $permission) {
