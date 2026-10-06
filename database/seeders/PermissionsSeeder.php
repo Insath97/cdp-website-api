@@ -115,6 +115,13 @@ class PermissionsSeeder extends Seeder
             ['name' => 'Faq Update',        'group_name' => 'Faq Permissions'],
             ['name' => 'Faq Delete',        'group_name' => 'Faq Permissions'],
             ['name' => 'Faq Toggle Active', 'group_name' => 'Faq Permissions'],
+
+            /* Award Type Management */
+            ['name' => 'Award Type Index',         'group_name' => 'Award Type Permissions'],
+            ['name' => 'Award Type Create',        'group_name' => 'Award Type Permissions'],
+            ['name' => 'Award Type Update',        'group_name' => 'Award Type Permissions'],
+            ['name' => 'Award Type Delete',        'group_name' => 'Award Type Permissions'],
+            ['name' => 'Award Type Toggle Active', 'group_name' => 'Award Type Permissions'],
         ];
 
         foreach ($permissions as $permission) {

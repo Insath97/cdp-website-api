@@ -7,6 +7,7 @@ use App\Http\Controllers\V1\Public\PublicContactTypeController;
 use App\Http\Controllers\V1\Public\PublicContactController;
 use App\Http\Controllers\V1\Public\PublicEventController;
 use App\Http\Controllers\V1\Public\PublicFaqController;
+use App\Http\Controllers\V1\Public\PublicAwardTypeController;
 use App\Http\Controllers\V1\Public\PublicPlanController;
 use App\Http\Controllers\V1\Public\PublicServiceController;
 use Illuminate\Support\Facades\Route;
@@ -34,4 +35,6 @@ Route::prefix('v1/public')->group(function () {
     Route::get('faq-types', [PublicFaqController::class, 'getFaqTypes']);
     Route::get('faq-types/{slug}', [PublicFaqController::class, 'getFaqTypeBySlug']);
     Route::get('faqs', [PublicFaqController::class, 'getFaqs']);
+
+    Route::get('award-types', [PublicAwardTypeController::class, 'index']);
 });
