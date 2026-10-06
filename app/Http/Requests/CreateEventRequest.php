@@ -27,11 +27,12 @@ class CreateEventRequest extends FormRequest
     {
         return [
             'title' => 'required|string|max:255',
-            'status' => 'required|in:pending,approved,rejected',
+            'status' => 'required|in:draft,pending,approved,rejected',
             'rejected_reason' => 'nullable|string',
             'created_date' => 'required|date',
             'thumbnail_image' => 'nullable|image|mimes:jpeg,png,jpg|max:10240',
-            'url' => 'nullable|url|max:255',
+            'urls' => 'nullable|array',
+            'urls.*' => 'url|max:255',
             'description' => 'nullable|string',
             'galleries' => 'nullable|array',
             'galleries.*' => 'image|mimes:jpeg,png,jpg|max:100240',

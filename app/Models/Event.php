@@ -11,6 +11,7 @@ class Event extends Model
     use HasFactory, SoftDeletes;
 
     // Status constants
+    const STATUS_DRAFT = 'draft';
     const STATUS_PENDING = 'pending';
     const STATUS_APPROVED = 'approved';
     const STATUS_REJECTED = 'rejected';
@@ -21,7 +22,6 @@ class Event extends Model
         'created_date',
         'created_by',
         'thumbnail_image',
-        'url',
         'description',
         'is_active',
         'status',
@@ -69,6 +69,14 @@ class Event extends Model
     public function galleries()
     {
         return $this->hasMany(EventGallery::class);
+    }
+
+    /**
+     * Get the urls for the event.
+     */
+    public function urls()
+    {
+        return $this->hasMany(EventUrl::class);
     }
 
     /**

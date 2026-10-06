@@ -29,7 +29,7 @@ class EventController extends Controller implements HasMiddleware
     {
         return [
             new Middleware('permission:Event Index', only: ['index', 'show']),
-            new Middleware('permission:Event Create', only: ['create', 'store']),
+            new Middleware('permission:Event Create', only: ['create', 'store', 'submitForReview']),
             new Middleware('permission:Event Update', only: ['edit', 'update']),
             new Middleware('permission:Event Toggle Active', only: ['toggleStatus']),
             new Middleware('permission:Event Restore', only: ['restore']),
@@ -46,7 +46,7 @@ class EventController extends Controller implements HasMiddleware
     {
         try {
             $perPage = $request->get('per_page', 15);
-            $query = Event::with(['galleries', 'tags']);
+            $query = Event::with(['galleries', 'urls', 'tags']);
 
             // Search
             if ($request->has('search') && $request->search != '') {
@@ -56,6 +56,10 @@ class EventController extends Controller implements HasMiddleware
             // Filters
             if ($request->has('is_active')) {
                 $query->where('is_active', $request->boolean('is_active'));
+            }
+
+            if ($request->has('status') && $request->status != '') {
+                $query->where('status', $request->status);
             }
 
             $query->orderBy('created_at', 'desc');
@@ -103,13 +107,19 @@ class EventController extends Controller implements HasMiddleware
 
             $data['created_by'] = Auth::id();
             
-            $canApprove = Auth::user()->hasRole('Super Admin') || Auth::user()->can('Event Approve');
-            $requestedStatus = $request->input('status', Event::STATUS_PENDING);
+            $canApprove = Auth::user()->hasRole('Super Admin') || Auth::user()->hasPermissionTo('Event Approve');
+            $requestedStatus = $request->input('status', Event::STATUS_DRAFT);
 
             if ($canApprove) {
                 $data['status'] = $requestedStatus;
             } else {
-                $data['status'] = Event::STATUS_PENDING;
+                if (in_array($requestedStatus, [Event::STATUS_APPROVED, Event::STATUS_REJECTED])) {
+                    return response()->json([
+                        'status' => 'error',
+                        'message' => 'You do not have permission to create approved or rejected events.',
+                    ], 403);
+                }
+                $data['status'] = $requestedStatus;
             }
 
             if (in_array($data['status'], [Event::STATUS_APPROVED, Event::STATUS_REJECTED])) {
@@ -145,6 +155,16 @@ class EventController extends Controller implements HasMiddleware
                 ]);
             }
 
+            // Handle multiple urls
+            if (!empty($data['urls'])) {
+                foreach ($data['urls'] as $url) {
+                    \App\Models\EventUrl::create([
+                        'event_id' => $event->id,
+                        'url' => $url,
+                    ]);
+                }
+            }
+
             // Handle tags
             if (! empty($data['tags'])) {
                 $tags = explode(',', $data['tags']);
@@ -172,7 +192,7 @@ class EventController extends Controller implements HasMiddleware
 
             $this->logActivity('CREATE', 'Event', "Created event: {$event->title}");
 
-            $event->load(['galleries', 'tags']);
+            $event->load(['galleries', 'urls', 'tags']);
 
             return response()->json([
                 'status' => 'success',
@@ -209,7 +229,7 @@ class EventController extends Controller implements HasMiddleware
     public function show(string $id)
     {
         try {
-            $event = Event::with(['galleries', 'tags', 'createdBy', 'decisionBy'])
+            $event = Event::with(['galleries', 'urls', 'tags', 'createdBy', 'decisionBy'])
                 ->where('id', $id)
                 ->orWhere('slug', $id)
                 ->first();
@@ -269,7 +289,7 @@ class EventController extends Controller implements HasMiddleware
                 $new = $data['status'];
                 $old = $event->status;
                 if ($new !== $old) {
-                    $canApprove = Auth::user()->hasRole('Super Admin') || Auth::user()->can('Event Approve');
+                    $canApprove = Auth::user()->hasRole('Super Admin') || Auth::user()->hasPermissionTo('Event Approve');
                     if (!$canApprove && in_array($new, [Event::STATUS_APPROVED, Event::STATUS_REJECTED])) {
                         return response()->json([
                             'status' => 'error',
@@ -311,6 +331,19 @@ class EventController extends Controller implements HasMiddleware
                 }
             }
 
+            // Handle multiple urls
+            if (isset($data['urls'])) {
+                $event->urls()->delete();
+                if (!empty($data['urls'])) {
+                    foreach ($data['urls'] as $url) {
+                        \App\Models\EventUrl::create([
+                            'event_id' => $event->id,
+                            'url' => $url,
+                        ]);
+                    }
+                }
+            }
+
             // Handle tags (replace all)
             if (isset($data['tags'])) {
                 if (! empty($data['tags'])) {
@@ -345,7 +378,7 @@ class EventController extends Controller implements HasMiddleware
             return response()->json([
                 'status' => 'success',
                 'message' => 'Event updated successfully',
-                'data' => $event->load(['galleries', 'tags']),
+                'data' => $event->load(['galleries', 'urls', 'tags']),
             ], 200);
         } catch (\Throwable $th) {
             DB::rollBack();
@@ -453,6 +486,10 @@ class EventController extends Controller implements HasMiddleware
 
             $name = $event->title;
             $this->deleteFile($event->thumbnail_image);
+            $galleryPaths = $event->galleries()->pluck('image_path')->toArray();
+            $this->deleteMultipleFiles($galleryPaths);
+            $event->galleries()->delete();
+            $event->urls()->delete();
             $event->forceDelete();
 
             $this->logActivity('FORCE_DELETE', 'Event', "Force deleted event: {$name}");
@@ -498,6 +535,51 @@ class EventController extends Controller implements HasMiddleware
             return response()->json([
                 'status' => 'error',
                 'message' => 'Failed to toggle event status',
+                'error' => config('app.debug') ? $th->getMessage() : 'Internal server error',
+            ], 500);
+        }
+    }
+
+    /**
+     * Submit a draft event for review (changes status to pending).
+     */
+    public function submitForReview(string $id)
+    {
+        try {
+            $event = Event::query()->find($id);
+            if (! $event) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Event not found',
+                    'data' => [],
+                ], 404);
+            }
+
+            if ($event->status !== Event::STATUS_DRAFT) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Only draft events can be submitted for review',
+                ], 422);
+            }
+
+            $event->update([
+                'status' => Event::STATUS_PENDING,
+                'decision_by' => null,
+                'decision_at' => null,
+                'rejected_reason' => null,
+            ]);
+
+            $this->logActivity('SUBMIT_FOR_REVIEW', 'Event', "Submitted event for review: {$event->title}");
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Event submitted for review successfully',
+                'data' => $event,
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to submit event for review',
                 'error' => config('app.debug') ? $th->getMessage() : 'Internal server error',
             ], 500);
         }

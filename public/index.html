@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CDP Empire - Customer Data Platform</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:'Inter',sans-serif;background:linear-gradient(135deg,#0a1f15 0%,#111827 50%,#0f172a 100%);min-height:100vh;overflow-x:hidden;color:#fff}
+        .particles{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;overflow:hidden;z-index:0}
+        .particle{position:absolute;width:4px;height:4px;background:rgba(22,139,97,.4);border-radius:50%;animation:float 15s infinite ease-in-out}
+        .particle:nth-child(1){left:10%;animation-duration:20s}
+        .particle:nth-child(2){left:20%;animation-delay:2s;animation-duration:18s}
+        .particle:nth-child(3){left:30%;animation-delay:4s;animation-duration:22s}
+        .particle:nth-child(4){left:40%;animation-delay:1s;animation-duration:16s}
+        .particle:nth-child(5){left:50%;animation-delay:3s;animation-duration:24s}
+        .particle:nth-child(6){left:60%;animation-delay:5s;animation-duration:19s}
+        .particle:nth-child(7){left:70%;animation-delay:.5s;animation-duration:21s}
+        .particle:nth-child(8){left:80%;animation-delay:2.5s;animation-duration:17s}
+        .particle:nth-child(9){left:90%;animation-delay:4.5s;animation-duration:23s}
+        .particle:nth-child(10){left:15%;animation-delay:1.5s;animation-duration:25s}
+        .particle:nth-child(11){left:25%;animation-delay:3.5s;animation-duration:14s}
+        .particle:nth-child(12){left:35%;animation-delay:.8s;animation-duration:26s}
+        .particle:nth-child(13){left:45%;animation-delay:2.8s;animation-duration:15s}
+        .particle:nth-child(14){left:55%;animation-delay:4.8s;animation-duration:27s}
+        .particle:nth-child(15){left:65%;animation-delay:1.8s;animation-duration:13s}
+        @keyframes float{0%,100%{transform:translateY(100vh) rotate(0);opacity:0}10%{opacity:1}90%{opacity:1}100%{transform:translateY(-100vh) rotate(720deg);opacity:0}}
+        .orb{position:fixed;border-radius:50%;filter:blur(80px);opacity:.3;animation:pulse 8s infinite ease-in-out}
+        .orb-1{width:400px;height:400px;background:#168B61;top:-100px;right:-100px}
+        .orb-2{width:300px;height:300px;background:#0F684A;bottom:-50px;left:-50px;animation-delay:4s}
+        .orb-3{width:200px;height:200px;background:#22c55e;top:50%;left:50%;transform:translate(-50%,-50%);animation-delay:2s}
+        @keyframes pulse{0%,100%{transform:scale(1);opacity:.3}50%{transform:scale(1.2);opacity:.5}}
+        .grid-pattern{position:fixed;top:0;left:0;width:100%;height:100%;background-image:linear-gradient(rgba(22,139,97,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(22,139,97,.03) 1px,transparent 1px);background-size:50px 50px;z-index:0}
+        .mouse-follower{position:fixed;width:300px;height:300px;background:radial-gradient(circle,rgba(22,139,97,.15) 0%,transparent 70%);border-radius:50%;pointer-events:none;z-index:5;transform:translate(-50%,-50%)}
+        .hero{position:relative;z-index:10;height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:1rem 2rem;text-align:center;overflow:hidden}
+        .badge{display:inline-flex;align-items:center;gap:8px;padding:6px 14px;background:rgba(22,139,97,.1);border:1px solid rgba(22,139,97,.3);border-radius:100px;font-size:.8rem;font-weight:500;color:#168B61;margin-bottom:1.25rem;animation:fadeInUp .8s ease-out .2s both;cursor:pointer;transition:all .3s ease}
+        .badge:hover{background:rgba(22,139,97,.2);border-color:rgba(22,139,97,.5);transform:translateY(-2px);box-shadow:0 10px 40px rgba(22,139,97,.2)}
+        .badge-dot{width:8px;height:8px;background:#168B61;border-radius:50%;animation:blink 2s infinite}
+        @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+        .hero-title{font-size:clamp(2rem,6vw,4.5rem);font-weight:900;line-height:1.05;margin-bottom:1rem;animation:fadeInUp .8s ease-out .4s both}
+        .line{display:block}
+        .highlight{background:linear-gradient(135deg,#168B61 0%,#22c55e 50%,#168B61 100%);background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:shimmer 3s linear infinite}
+        @keyframes shimmer{0%{background-position:0% center}100%{background-position:200% center}}
+        .hero-subtitle{font-size:clamp(.9rem,1.5vw,1.1rem);color:#9ca3af;max-width:550px;margin:0 auto 1.5rem;line-height:1.6;animation:fadeInUp .8s ease-out .6s both}
+        .cta-group{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;animation:fadeInUp .8s ease-out .8s both}
+        .btn{display:inline-flex;align-items:center;gap:8px;padding:12px 24px;border-radius:10px;font-size:.9rem;font-weight:600;text-decoration:none;transition:all .3s cubic-bezier(.4,0,.2,1);cursor:pointer;border:none;position:relative;overflow:hidden}
+        .btn-primary{background:linear-gradient(135deg,#168B61 0%,#0F684A 100%);color:#fff;box-shadow:0 4px 20px rgba(22,139,97,.4)}
+        .btn-primary:hover{transform:translateY(-3px) scale(1.02);box-shadow:0 10px 40px rgba(22,139,97,.5)}
+        .btn-primary::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.2),transparent);transition:left .5s ease}
+        .btn-primary:hover::before{left:100%}
+        .btn-secondary{background:rgba(255,255,255,.05);color:#fff;border:1px solid rgba(255,255,255,.1);backdrop-filter:blur(10px)}
+        .btn-secondary:hover{background:rgba(255,255,255,.1);border-color:rgba(22,139,97,.5);transform:translateY(-3px);box-shadow:0 10px 40px rgba(0,0,0,.3)}
+        .floating-card{position:absolute;background:rgba(255,255,255,.05);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:1.25rem;animation:floatCard 6s ease-in-out infinite;cursor:pointer;transition:all .3s ease}
+        .floating-card:hover{transform:scale(1.1)!important;border-color:rgba(22,139,97,.5);box-shadow:0 20px 60px rgba(22,139,97,.2)}
+        .floating-card-1{top:15%;left:8%;animation-delay:0s}
+        .floating-card-2{top:20%;right:8%;animation-delay:2s}
+        .floating-card-3{bottom:25%;left:10%;animation-delay:4s}
+        .floating-card-4{bottom:20%;right:10%;animation-delay:1s}
+        @keyframes floatCard{0%,100%{transform:translateY(0)}50%{transform:translateY(-20px)}}
+        .card-icon{width:40px;height:40px;background:rgba(22,139,97,.2);border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:.75rem;font-size:1.25rem}
+        .card-title{font-size:.875rem;font-weight:600;color:#fff;margin-bottom:.25rem}
+        .card-desc{font-size:.75rem;color:#9ca3af}
+        .stats{display:flex;gap:3rem;margin-top:4rem;animation:fadeInUp .8s ease-out 1s both}
+        .stat{text-align:center;cursor:pointer;transition:all .3s ease;padding:1rem;border-radius:12px}
+        .stat:hover{background:rgba(22,139,97,.1);transform:translateY(-5px)}
+        .stat-value{font-size:2rem;font-weight:800;color:#168B61;line-height:1}
+        .stat-label{font-size:.875rem;color:#6b7280;margin-top:.5rem}
+        .scroll-indicator{position:absolute;bottom:2rem;left:50%;transform:translateX(-50%);animation:bounce 2s infinite}
+        .scroll-mouse{width:28px;height:44px;border:2px solid rgba(22,139,97,.5);border-radius:14px;position:relative}
+        .scroll-wheel{width:4px;height:8px;background:#168B61;border-radius:2px;position:absolute;left:50%;top:8px;transform:translateX(-50%);animation:scrollWheel 2s infinite}
+        @keyframes scrollWheel{0%{opacity:1;transform:translateX(-50%) translateY(0)}100%{opacity:0;transform:translateX(-50%) translateY(16px)}}
+        @keyframes bounce{0%,20%,50%,80%,100%{transform:translateX(-50%) translateY(0)}40%{transform:translateX(-50%) translateY(-10px)}60%{transform:translateX(-50%) translateY(-5px)}}
+        @keyframes fadeInUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+        .ripple{position:absolute;border-radius:50%;background:rgba(22,139,97,.3);transform:scale(0);animation:ripple-effect .6s linear;pointer-events:none}
+        @keyframes ripple-effect{to{transform:scale(4);opacity:0}}
+        @media(max-width:768px){.floating-card{display:none}.stats{gap:1.5rem}.stat-value{font-size:1.5rem}}
+    </style>
+</head>
+<body>
+    <div class="mouse-follower" id="mouseFollower"></div>
+    <div class="particles">
+        <div class="particle"></div><div class="particle"></div><div class="particle"></div>
+        <div class="particle"></div><div class="particle"></div><div class="particle"></div>
+        <div class="particle"></div><div class="particle"></div><div class="particle"></div>
+        <div class="particle"></div><div class="particle"></div><div class="particle"></div>
+        <div class="particle"></div><div class="particle"></div><div class="particle"></div>
+    </div>
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+    <div class="grid-pattern"></div>
+
+    <div class="floating-card floating-card-1" data-tilt>
+        <div class="card-icon">📊</div>
+        <div class="card-title">Analytics</div>
+        <div class="card-desc">Real-time insights</div>
+    </div>
+    <div class="floating-card floating-card-2" data-tilt>
+        <div class="card-icon">🔒</div>
+        <div class="card-title">Security</div>
+        <div class="card-desc">Enterprise grade</div>
+    </div>
+    <div class="floating-card floating-card-3" data-tilt>
+        <div class="card-icon">⚡</div>
+        <div class="card-title">Performance</div>
+        <div class="card-desc">Lightning fast</div>
+    </div>
+    <div class="floating-card floating-card-4" data-tilt>
+        <div class="card-icon">🎯</div>
+        <div class="card-title">Targeting</div>
+        <div class="card-desc">Precision control</div>
+    </div>
+
+    <section class="hero">
+        <div class="hero-content">
+            <div class="badge" id="badge">
+                <span class="badge-dot"></span>
+                API Status: Online
+            </div>
+            <h1 class="hero-title">
+                <span class="line"><span>Welcome to</span></span>
+                <span class="line"><span class="highlight">CDP Empire</span></span>
+                <span class="line"><span>API Platform</span></span>
+            </h1>
+            <p class="hero-subtitle">
+                The ultimate Customer Data Platform API that powers your applications
+                with real-time data, analytics, and intelligent automation.
+            </p>
+            <div class="cta-group">
+                <a href="/docs" class="btn btn-primary magnetic">
+                    <span>API Documentation</span>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </a>
+                <a href="/health" class="btn btn-secondary magnetic">
+                    <span>Health Check</span>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+                </a>
+            </div>
+            <div class="stats">
+                <div class="stat"><div class="stat-value">v1.0</div><div class="stat-label">API Version</div></div>
+                <div class="stat"><div class="stat-value">99.9%</div><div class="stat-label">Uptime</div></div>
+                <div class="stat"><div class="stat-value">REST</div><div class="stat-label">API Type</div></div>
+                <div class="stat"><div class="stat-value">24/7</div><div class="stat-label">Available</div></div>
+            </div>
+        </div>
+        <div class="scroll-indicator">
+            <div class="scroll-mouse"><div class="scroll-wheel"></div></div>
+        </div>
+    </section>
+
+    <script>
+        var mf=document.getElementById('mouseFollower'),mx=0,my=0,fx=0,fy=0;
+        document.addEventListener('mousemove',function(e){mx=e.clientX;my=e.clientY});
+        !function anim(){fx+=(mx-fx)*.1;fy+=(my-fy)*.1;mf.style.left=fx+'px';mf.style.top=fy+'px';requestAnimationFrame(anim)}();
+        document.querySelectorAll('[data-tilt]').forEach(function(c){c.addEventListener('mousemove',function(e){var r=c.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top,cx=r.width/2,cy=r.height/2;c.style.transform='perspective(1000px) rotateX('+(y-cy)/10+'deg) rotateY('+(cx-x)/10+'deg) scale(1.05)'});c.addEventListener('mouseleave',function(){c.style.transform='perspective(1000px) rotateX(0) rotateY(0) scale(1)'})});
+        document.querySelectorAll('.magnetic').forEach(function(b){b.addEventListener('mousemove',function(e){var r=b.getBoundingClientRect(),x=e.clientX-r.left-r.width/2,y=e.clientY-r.top-r.height/2;b.style.transform='translate('+x*.2+'px,'+y*.2+'px)'});b.addEventListener('mouseleave',function(){b.style.transform='translate(0,0)'})});
+        document.querySelectorAll('.btn').forEach(function(b){b.addEventListener('click',function(e){var r=document.createElement('span');r.classList.add('ripple');var rc=this.getBoundingClientRect();r.style.left=(e.clientX-rc.left)+'px';r.style.top=(e.clientY-rc.top)+'px';this.appendChild(r);setTimeout(function(){r.remove()},600)})});
+        document.querySelectorAll('.stat').forEach(function(s){s.addEventListener('mouseenter',function(){s.style.transform='translateY(-5px) scale(1.05)'});s.addEventListener('mouseleave',function(){s.style.transform='translateY(0) scale(1)'})});
+        document.addEventListener('mousemove',function(e){var x=(e.clientX-window.innerWidth/2)*.02,y=(e.clientY-window.innerHeight/2)*.02;document.querySelectorAll('.floating-card').forEach(function(c,i){var s=(i+1)*.5;c.style.transform='translate('+x*s+'px,'+y*s+'px)'})});
+    </script>
+</body>
+</html>

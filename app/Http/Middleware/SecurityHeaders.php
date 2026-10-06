@@ -21,7 +21,10 @@ class SecurityHeaders
         $response->headers->set('X-Frame-Options', 'DENY');
         $response->headers->set('X-XSS-Protection', '1; mode=block');
         $response->headers->set('Referrer-Policy', 'no-referrer-when-downgrade');
-        $response->headers->set('Content-Security-Policy', "default-src 'none'; frame-ancestors 'none';");
+
+        if ($request->is('api/*')) {
+            $response->headers->set('Content-Security-Policy', "default-src 'none'; frame-ancestors 'none';");
+        }
 
         return $response;
     }

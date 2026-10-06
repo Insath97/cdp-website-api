@@ -83,6 +83,7 @@ Route::middleware(['auth', 'throttle:api'])->prefix('v1')->group(function () {
     Route::apiResource('events', EventController::class);
     Route::prefix('events')->group(function () {
         Route::patch('{id}/toggle-status', [EventController::class, 'toggleStatus']);
+        Route::patch('{id}/submit-for-review', [EventController::class, 'submitForReview']);
         Route::patch('{id}/approve', [EventController::class, 'approve']);
         Route::patch('{id}/reject', [EventController::class, 'reject']);
         Route::patch('{id}/restore', [EventController::class, 'restore']);
