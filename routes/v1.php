@@ -21,6 +21,7 @@ use App\Http\Controllers\V1\DashboardController;
 use App\Http\Controllers\V1\FaqTypeController;
 use App\Http\Controllers\V1\FaqController;
 use App\Http\Controllers\V1\AwardTypeController;
+use App\Http\Controllers\V1\AwardController;
 
 
 Route::prefix('v1')->middleware('throttle:auth')->group(function () {
@@ -126,5 +127,10 @@ Route::middleware(['auth', 'throttle:api'])->prefix('v1')->group(function () {
     Route::apiResource('award-types', AwardTypeController::class);
     Route::prefix('award-types')->group(function () {
         Route::patch('{id}/toggle-status', [AwardTypeController::class, 'toggleStatus']);
+    });
+
+    Route::apiResource('awards', AwardController::class);
+    Route::prefix('awards')->group(function () {
+        Route::patch('{id}/toggle-status', [AwardController::class, 'toggleStatus']);
     });
 });
