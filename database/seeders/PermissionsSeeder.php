@@ -129,6 +129,13 @@ class PermissionsSeeder extends Seeder
             ['name' => 'Award Update',        'group_name' => 'Award Permissions'],
             ['name' => 'Award Delete',        'group_name' => 'Award Permissions'],
             ['name' => 'Award Toggle Active', 'group_name' => 'Award Permissions'],
+
+            /* Testimonial Management */
+            ['name' => 'Testimonial Index',         'group_name' => 'Testimonial Permissions'],
+            ['name' => 'Testimonial Create',        'group_name' => 'Testimonial Permissions'],
+            ['name' => 'Testimonial Update',        'group_name' => 'Testimonial Permissions'],
+            ['name' => 'Testimonial Delete',        'group_name' => 'Testimonial Permissions'],
+            ['name' => 'Testimonial Toggle Active', 'group_name' => 'Testimonial Permissions'],
         ];
 
         foreach ($permissions as $permission) {
