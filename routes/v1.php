@@ -23,6 +23,7 @@ use App\Http\Controllers\V1\FaqController;
 use App\Http\Controllers\V1\AwardTypeController;
 use App\Http\Controllers\V1\AwardController;
 use App\Http\Controllers\V1\TestimonialController;
+use App\Http\Controllers\V1\LeadershipController;
 
 
 Route::prefix('v1')->middleware('throttle:auth')->group(function () {
@@ -138,5 +139,10 @@ Route::middleware(['auth', 'throttle:api'])->prefix('v1')->group(function () {
     Route::apiResource('testimonials', TestimonialController::class);
     Route::prefix('testimonials')->group(function () {
         Route::patch('{id}/toggle-status', [TestimonialController::class, 'toggleStatus']);
+    });
+
+    Route::apiResource('leadership-members', LeadershipController::class);
+    Route::prefix('leadership-members')->group(function () {
+        Route::patch('{id}/toggle-status', [LeadershipController::class, 'toggleStatus']);
     });
 });

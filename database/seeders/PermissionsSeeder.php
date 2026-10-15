@@ -136,6 +136,13 @@ class PermissionsSeeder extends Seeder
             ['name' => 'Testimonial Update',        'group_name' => 'Testimonial Permissions'],
             ['name' => 'Testimonial Delete',        'group_name' => 'Testimonial Permissions'],
             ['name' => 'Testimonial Toggle Active', 'group_name' => 'Testimonial Permissions'],
+
+            /* Leadership Management */
+            ['name' => 'Leadership Index',         'group_name' => 'Leadership Permissions'],
+            ['name' => 'Leadership Create',        'group_name' => 'Leadership Permissions'],
+            ['name' => 'Leadership Update',        'group_name' => 'Leadership Permissions'],
+            ['name' => 'Leadership Delete',        'group_name' => 'Leadership Permissions'],
+            ['name' => 'Leadership Toggle Active', 'group_name' => 'Leadership Permissions'],
         ];
 
         foreach ($permissions as $permission) {
