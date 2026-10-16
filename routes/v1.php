@@ -134,6 +134,9 @@ Route::middleware(['auth', 'throttle:api'])->prefix('v1')->group(function () {
     Route::apiResource('awards', AwardController::class);
     Route::prefix('awards')->group(function () {
         Route::patch('{id}/toggle-status', [AwardController::class, 'toggleStatus']);
+        Route::post('{award}/galleries', [AwardController::class, 'uploadGalleries']);
+        Route::post('{award}/galleries/{gallery}', [AwardController::class, 'updateGalleryImage']);
+        Route::delete('{award}/galleries/{gallery}', [AwardController::class, 'deleteGalleryImage']);
     });
 
     Route::apiResource('testimonials', TestimonialController::class);

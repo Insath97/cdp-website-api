@@ -5,6 +5,8 @@ namespace App\Http\Controllers\V1;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CreateAwardRequest;
 use App\Http\Requests\UpdateAwardRequest;
+use App\Http\Requests\UpdateAwardGalleryRequest;
+use App\Http\Requests\UploadAwardGalleryRequest;
 use App\Models\Award;
 use App\Models\AwardGallery;
 use App\Traits\ActivityLogTrait;
@@ -28,9 +30,9 @@ class AwardController extends Controller implements HasMiddleware
         return [
             new Middleware('permission:Award Index', only: ['index', 'show']),
             new Middleware('permission:Award Create', only: ['store']),
-            new Middleware('permission:Award Update', only: ['update']),
+            new Middleware('permission:Award Update', only: ['update', 'updateGalleryImage', 'uploadGalleries']),
             new Middleware('permission:Award Toggle Active', only: ['toggleStatus']),
-            new Middleware('permission:Award Delete', only: ['destroy']),
+            new Middleware('permission:Award Delete', only: ['destroy', 'deleteGalleryImage']),
         ];
     }
 
@@ -370,4 +372,185 @@ class AwardController extends Controller implements HasMiddleware
             ], 500);
         }
     }
+
+    /**
+     * Upload and append new gallery images to the award.
+     */
+    public function uploadGalleries(UploadAwardGalleryRequest $request, string $awardId)
+    {
+        try {
+            $award = Award::find($awardId);
+
+            if (!$award) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Award not found',
+                    'data' => null
+                ], 404);
+            }
+
+            DB::beginTransaction();
+
+            $galleryPaths = $this->handleMultipleFileUpload(
+                $request,
+                'galleries',
+                [],
+                'awards/' . $award->id,
+                Str::slug($award->title . '-' . $award->id)
+            );
+
+            $createdGalleries = [];
+            foreach ($galleryPaths as $path) {
+                $createdGalleries[] = AwardGallery::create([
+                    'award_id' => $award->id,
+                    'image_path' => $path,
+                ]);
+            }
+
+            DB::commit();
+
+            $this->logActivity('UPLOAD_GALLERY', 'Award', "Uploaded " . count($createdGalleries) . " gallery image(s) for award: {$award->title}");
+
+            $award->load(['awardType', 'galleries']);
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Gallery images uploaded successfully',
+                'data' => [
+                    'uploaded_count' => count($createdGalleries),
+                    'galleries' => $createdGalleries,
+                    'award' => $award,
+                ]
+            ], 201);
+
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to upload gallery images',
+                'error' => config('app.debug') ? $th->getMessage() : 'Internal server error'
+            ], 500);
+        }
+    }
+
+    /**
+     * Update/replace a single gallery image.
+     */
+    public function updateGalleryImage(UpdateAwardGalleryRequest $request, string $awardId, string $galleryId)
+    {
+        try {
+            $award = Award::find($awardId);
+
+            if (!$award) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Award not found',
+                    'data' => null
+                ], 404);
+            }
+
+            $gallery = $award->galleries()->find($galleryId);
+
+            if (!$gallery) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Gallery image not found',
+                    'data' => null
+                ], 404);
+            }
+
+            DB::beginTransaction();
+
+            $newPath = $this->handleFileUpload(
+                $request,
+                'image',
+                $gallery->image_path,
+                'awards/' . $award->id,
+                Str::slug($award->title . '-' . $award->id . '-' . $gallery->id)
+            );
+
+            if (!$newPath) {
+                DB::rollBack();
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'No image file uploaded',
+                    'data' => null
+                ], 422);
+            }
+
+            $gallery->update([
+                'image_path' => $newPath,
+            ]);
+
+            DB::commit();
+
+            $this->logActivity('UPDATE_GALLERY', 'Award', "Updated gallery image #{$galleryId} for award: {$award->title}");
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Gallery image updated successfully',
+                'data' => $gallery
+            ], 200);
+
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to update gallery image',
+                'error' => config('app.debug') ? $th->getMessage() : 'Internal server error'
+            ], 500);
+        }
+    }
+
+    /**
+     * Delete a single gallery image.
+     */
+    public function deleteGalleryImage(string $awardId, string $galleryId)
+    {
+        try {
+            $award = Award::find($awardId);
+
+            if (!$award) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Award not found',
+                    'data' => null
+                ], 404);
+            }
+
+            $gallery = $award->galleries()->find($galleryId);
+
+            if (!$gallery) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Gallery image not found',
+                    'data' => null
+                ], 404);
+            }
+
+            DB::beginTransaction();
+
+            $this->deleteFile($gallery->image_path);
+            $gallery->delete();
+
+            DB::commit();
+
+            $this->logActivity('DELETE_GALLERY', 'Award', "Deleted gallery image #{$galleryId} for award: {$award->title}");
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Gallery image deleted successfully',
+                'data' => null
+            ], 200);
+
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to delete gallery image',
+                'error' => config('app.debug') ? $th->getMessage() : 'Internal server error'
+            ], 500);
+        }
+    }
 }
+
