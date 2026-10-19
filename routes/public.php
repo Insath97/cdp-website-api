@@ -11,6 +11,7 @@ use App\Http\Controllers\V1\Public\PublicAwardTypeController;
 use App\Http\Controllers\V1\Public\PublicAwardController;
 use App\Http\Controllers\V1\Public\PublicPlanController;
 use App\Http\Controllers\V1\Public\PublicServiceController;
+use App\Http\Controllers\V1\Public\PublicLeadershipController;
 use App\Http\Controllers\V1\Public\PublicTestimonialController;
 use Illuminate\Support\Facades\Route;
 
@@ -44,4 +45,9 @@ Route::prefix('v1/public')->group(function () {
     Route::get('awards/{idOrSlug}', [PublicAwardController::class, 'show']);
 
     Route::get('testimonials', [PublicTestimonialController::class, 'index']);
+
+    Route::prefix('leadership')->group(function () {
+        Route::get('', [PublicLeadershipController::class, 'index']);
+        Route::get('{id}', [PublicLeadershipController::class, 'show']);
+    });
 });
