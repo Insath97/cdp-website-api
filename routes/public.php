@@ -13,6 +13,7 @@ use App\Http\Controllers\V1\Public\PublicPlanController;
 use App\Http\Controllers\V1\Public\PublicServiceController;
 use App\Http\Controllers\V1\Public\PublicLeadershipController;
 use App\Http\Controllers\V1\Public\PublicTestimonialController;
+use App\Http\Controllers\V1\Public\PublicInvestorController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1/public')->group(function () {
@@ -49,5 +50,10 @@ Route::prefix('v1/public')->group(function () {
     Route::prefix('leadership')->group(function () {
         Route::get('', [PublicLeadershipController::class, 'index']);
         Route::get('{id}', [PublicLeadershipController::class, 'show']);
+    });
+
+    Route::prefix('investors')->group(function () {
+        Route::get('', [PublicInvestorController::class, 'index']);
+        Route::get('{id}', [PublicInvestorController::class, 'show']);
     });
 });
