@@ -935,12 +935,12 @@
                     </div>
 
                     <h1 class="hero-title">
-                        Engineered for Speed, <br>
-                        <span class="text-gradient">Data Scalability & Reliability</span>
+                        CDP Empire <br>
+                        <span class="text-gradient">Website REST API</span>
                     </h1>
 
                     <p class="hero-description">
-                        The core backend service empowering the Customer Data Platform with ultra-low latency endpoints, comprehensive project catalogs, modular CMS capabilities, and enterprise-grade Sanctum security.
+                        The official backend REST API powering the CDP Empire website with real-time projects, services, CMS management, careers, leadership, and investor relations.
                     </p>
 
                 </div>
