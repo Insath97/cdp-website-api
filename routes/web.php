@@ -3,20 +3,11 @@
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 
-// Landing page - serve static HTML file directly
+// Landing page - render index Blade view
 Route::get('/', function () {
-    $path = public_path('index.html');
-    if (file_exists($path)) {
-        return response(file_get_contents($path), 200, [
-            'Content-Type' => 'text/html',
-        ]);
-    }
-    return response()->json([
-        'message' => 'Welcome to CDP Empire API',
-        'status' => 'online',
-        'version' => '1.0.0',
-    ]);
+    return view('index');
 });
+
 
 // Comprehensive health check
 Route::get('/health', function () {
