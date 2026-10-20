@@ -150,6 +150,13 @@ class PermissionsSeeder extends Seeder
             ['name' => 'Investor Update',        'group_name' => 'Investor Permissions'],
             ['name' => 'Investor Delete',        'group_name' => 'Investor Permissions'],
             ['name' => 'Investor Toggle Active', 'group_name' => 'Investor Permissions'],
+
+            /* Project Management */
+            ['name' => 'Project Index',         'group_name' => 'Project Permissions'],
+            ['name' => 'Project Create',        'group_name' => 'Project Permissions'],
+            ['name' => 'Project Update',        'group_name' => 'Project Permissions'],
+            ['name' => 'Project Delete',        'group_name' => 'Project Permissions'],
+            ['name' => 'Project Toggle Active', 'group_name' => 'Project Permissions'],
         ];
 
         foreach ($permissions as $permission) {

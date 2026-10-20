@@ -25,6 +25,7 @@ use App\Http\Controllers\V1\AwardController;
 use App\Http\Controllers\V1\TestimonialController;
 use App\Http\Controllers\V1\LeadershipController;
 use App\Http\Controllers\V1\InvestorController;
+use App\Http\Controllers\V1\ProjectController;
 
 
 Route::prefix('v1')->middleware('throttle:auth')->group(function () {
@@ -153,5 +154,10 @@ Route::middleware(['auth', 'throttle:api'])->prefix('v1')->group(function () {
     Route::apiResource('investors', InvestorController::class);
     Route::prefix('investors')->group(function () {
         Route::patch('{id}/toggle-status', [InvestorController::class, 'toggleStatus']);
+    });
+
+    Route::apiResource('projects', ProjectController::class);
+    Route::prefix('projects')->group(function () {
+        Route::patch('{id}/toggle-status', [ProjectController::class, 'toggleStatus']);
     });
 });
