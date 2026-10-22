@@ -15,14 +15,13 @@ return new class extends Migration
             $table->id();
             $table->string('title');
             $table->string('slug')->unique();
-            $table->enum('status',['pending','approved','rejected'])->default('pending');
+            $table->enum('status', ['draft', 'pending', 'approved', 'rejected'])->default('draft');
             $table->foreignId('decision_by')->nullable()->constrained('users')->nullOnDelete();
             $table->timestamp('decision_at')->nullable();
             $table->text('rejected_reason')->nullable();
             $table->date('created_date');
             $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
             $table->string('thumbnail_image')->nullable();
-            $table->string('url')->nullable();
             $table->text('description');
             $table->boolean('is_active')->default(true);
             $table->softDeletes();

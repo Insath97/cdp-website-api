@@ -16,7 +16,7 @@ class PublicBranchController extends Controller
         try {
             $branches = Branch::active()
                 ->orderBy('name', 'asc')
-                ->get(['id', 'name', 'code', 'address', 'city']);
+                ->get(['id', 'name', 'code', 'address', 'city', 'phone', 'description']);
 
             return response()->json([
                 'status' => 'success',

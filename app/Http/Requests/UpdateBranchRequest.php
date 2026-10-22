@@ -34,6 +34,8 @@ class UpdateBranchRequest extends FormRequest
             ],
             'address' => 'required|string|max:500',
             'city' => 'required|string|max:255',
+            'phone' => 'nullable|string|max:50',
+            'description' => 'nullable|string',
             'is_active' => 'nullable|boolean',
         ];
     }

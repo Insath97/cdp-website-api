@@ -17,6 +17,8 @@ return new class extends Migration
             $table->string('code')->unique();
             $table->string('address');
             $table->string('city');
+            $table->string('phone')->nullable();
+            $table->text('description')->nullable();
             $table->boolean('is_active')->default(true);
             $table->timestamps();
         });

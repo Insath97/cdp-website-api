@@ -14,6 +14,8 @@ class Branch extends Model
         'code',
         'address',
         'city',
+        'phone',
+        'description',
         'is_active',
     ];
 
@@ -42,7 +44,9 @@ class Branch extends Model
         return $query->where(function ($q) use ($search) {
             $q->where('name', 'LIKE', "%{$search}%")
               ->orWhere('code', 'LIKE', "%{$search}%")
-              ->orWhere('city', 'LIKE', "%{$search}%");
+              ->orWhere('city', 'LIKE', "%{$search}%")
+              ->orWhere('phone', 'LIKE', "%{$search}%")
+              ->orWhere('description', 'LIKE', "%{$search}%");
         });
     }
 }

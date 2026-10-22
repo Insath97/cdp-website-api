@@ -26,6 +26,8 @@ class StoreBranchRequest extends FormRequest
             'code' => 'required|string|max:100|unique:branches,code',
             'address' => 'required|string|max:500',
             'city' => 'required|string|max:255',
+            'phone' => 'nullable|string|max:50',
+            'description' => 'nullable|string',
             'is_active' => 'nullable|boolean',
         ];
     }
